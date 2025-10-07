@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const linkSchema = new mongoose.Schema({
   // This creates a reference to a User document.
-  // It's how we know which user owns this link.
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -28,7 +27,7 @@ const linkSchema = new mongoose.Schema({
     enum: ['Standard', 'Video Embed', 'Image Embed'],
     default: 'Standard',
   },
-  // You also mentioned drag-and-drop reordering. We'll add an order index for that.
+  // Drag-and-drop reordering. Adding an order index.
   orderIndex: {
     type: Number,
     default: 0,
