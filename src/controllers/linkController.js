@@ -7,7 +7,7 @@ const Link = require('../models/linkModel');
  * @access  Private
  */
 const getLinks = asyncHandler(async (req, res) => {
-    // The 'protect' middleware gives us req.user
+    // The 'protect' middleware gives req.user
     const links = await Link.find({ user: req.user._id });
     res.json(links);
 });

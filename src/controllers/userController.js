@@ -1,5 +1,3 @@
-// src/controllers/userController.js
-
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../utils/generateToken');
@@ -21,11 +19,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // 3. Create the new user in the database
-  // Note: Password hashing will be done in the user model (next step)
+  // Note: Password hashing will be done in the user model
   const user = await User.create({
     username,
     email,
-    password, // We're passing the plain password for now
+    password, // Plain password
   });
 
   // 4. If user was created successfully, send back user data and a token
@@ -55,7 +53,6 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   // Check if user exists and if password matches
-  // We'll create the matchPassword method in the next step
   if (user && (await user.matchPassword(password))) {
     res.json({
       _id: user._id,
@@ -70,4 +67,47 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser };
+/**
+  * @desc    Get user profile
+  * @route   GET /api/users/profile
+  * @access  Private
+  */
+const getUserProfile = asyncHandler(async (req, res) => {
+  // req.user is available from 'protect' middleware
+  const user = {
+    _id: req.user._id,
+    username: req.user.username,
+    email: req.user.email,
+    bio: req.user.bio,
+    profilePhotoUrl: req.user.profilePhotoUrl,
+  };
+  res.json(user);
+});
+
+/**
+  * @desc    Update user profile
+  * @route   PUT /api/users/profile
+  * @access  Private
+  */
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.bio = req.body.bio || user.bio;
+    user.profilePhotoUrl = req.body.profilePhotoUrl || user.profilePhotoUrl;
+    user.username = req.body.username || user.username;
+    const updatedUser = await user.save();
+    res.json({
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      bio: updatedUser.bio,
+      profilePhotoUrl: updatedUser.profilePhotoUrl,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+module.exports = { registerUser, authUser, getUserProfile, updateUserProfile };
