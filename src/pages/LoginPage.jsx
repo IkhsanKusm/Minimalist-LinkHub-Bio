@@ -1,27 +1,47 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import AuthContext from '../context/AuthContext';
+
 import AnimatedBackground from '../components/AnimatedBackground';
 import GlassCard from '../components/GlassCard';
 import NeumorphicButton from '../components/NeumorphicButton';
 import ThreeDIcon from '../components/3DIcon';
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic
-    console.log('Login data:', formData);
-  };
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { login } = useContext(AuthContext); // Get the login function from context
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const config = {
+        headers: { 'Content-Type': 'application/json' },
+      };
+      const { data } = await axios.post(
+        'http://localhost:5001/api/users/login',
+        { email: formData.email, password: formData.password },
+        config
+      );
+      
+      login(data); // Save user info to context and local storage
+      navigate('/dashboard'); // Redirect on success
+
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid email or password');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,6 +60,14 @@ const LoginPage = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
             <p className="text-gray-600">Sign in to your LinkHub account</p>
           </div>
+
+          {/* Display Login Error */}
+          {error && (
+            <div className="p-3 mb-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center space-x-2">
+              <span>❌</span>
+              <span>{error}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -77,8 +105,9 @@ const LoginPage = () => {
             <NeumorphicButton 
               type="submit" 
               className="w-full py-4 text-lg"
+              disabled={isLoading}
             >
-              🔑 Sign In
+              {isLoading ? 'Signing In...' : '🔑 Sign In'}
             </NeumorphicButton>
           </form>
 

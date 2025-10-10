@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AnimatedBackground from '../components/AnimatedBackground';
 import GlassCard from '../components/GlassCard';
 import NeumorphicButton from '../components/NeumorphicButton';
 import ThreeDIcon from '../components/3DIcon';
+import axios from 'axios';
+import AuthContext from '../context/AuthContext';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +16,7 @@ const RegisterPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const { login } = useContext(AuthContext); // Get the login function from context
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -53,15 +56,23 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Handle successful registration
-      console.log('Registration data:', formData);
-      navigate('/dashboard');
+      // **REAL API CALL**
+      const config = {
+        headers: { 'Content-Type': 'application/json' },
+      };
+      const { data } = await axios.post(
+        'http://localhost:5001/api/users/register', // Our backend URL
+        { username: formData.username, email: formData.email, password: formData.password },
+        config
+      );
+
+      // On success, call the login function from our context
+      login(data);
+      navigate('/dashboard'); // Redirect to the dashboard
+
     } catch (error) {
       console.error('Registration error:', error);
-      setErrors({ submit: 'Registration failed. Please try again.' });
+      setErrors({ submit: error.response?.data?.message || 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }

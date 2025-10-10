@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 import NeumorphicButton from './NeumorphicButton';
 import ThreeDIcon from './3DIcon';
 
@@ -8,6 +9,8 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { userInfo, logout } = useContext(AuthContext);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,10 +21,18 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
   const isDashboard = location.pathname === '/dashboard';
 
-  if (isAuthPage) return null;
+  // Hide header on auth pages and public profile pages
+  if (isAuthPage || (location.pathname !== '/' && location.pathname !== '/features' && location.pathname !== '/plans' && location.pathname !== '/contact' && location.pathname !== '/dashboard')) {
+    return null;
+  }
 
   return (
     <header className={`
@@ -79,36 +90,25 @@ const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isDashboard ? (
-              <div className="flex items-center space-x-4">
+            {userInfo ? (
+              <>
                 <NeumorphicButton 
-                  variant="secondary" 
-                  onClick={() => navigate('/profile')}
-                  className="flex items-center space-x-2"
+                  variant="secondary"
+                  onClick={() => navigate('/dashboard')}
                 >
-                  <span>👤</span>
-                  <span>Profile</span>
+                  Dashboard
                 </NeumorphicButton>
-                <NeumorphicButton 
-                  onClick={() => {
-                    // Handle logout
-                    navigate('/');
-                  }}
-                >
+                <NeumorphicButton onClick={handleLogout}>
                   Logout
                 </NeumorphicButton>
-              </div>
+              </>
             ) : (
               <>
                 <Link to="/login">
-                  <NeumorphicButton variant="secondary">
-                    Sign In
-                  </NeumorphicButton>
+                  <NeumorphicButton variant="secondary">Sign In</NeumorphicButton>
                 </Link>
                 <Link to="/register">
-                  <NeumorphicButton>
-                    Get Started Free
-                  </NeumorphicButton>
+                  <NeumorphicButton>Get Started Free</NeumorphicButton>
                 </Link>
               </>
             )}
@@ -157,40 +157,22 @@ const Header = () => {
             </Link>
             
             <div className="pt-4 space-y-3">
-              {isDashboard ? (
+              {userInfo ? (
                 <>
-                  <NeumorphicButton 
-                    variant="secondary" 
-                    onClick={() => {
-                      navigate('/profile');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full justify-center"
-                  >
-                    👤 Profile
+                  <NeumorphicButton variant="secondary" onClick={() => { navigate('/dashboard'); setIsMobileMenuOpen(false); }} className="w-full justify-center">
+                    Dashboard
                   </NeumorphicButton>
-                  <NeumorphicButton 
-                    onClick={() => {
-                      // Handle logout
-                      navigate('/');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full justify-center"
-                  >
+                  <NeumorphicButton onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="w-full justify-center">
                     Logout
                   </NeumorphicButton>
                 </>
               ) : (
                 <>
                   <Link to="/login" className="block" onClick={() => setIsMobileMenuOpen(false)}>
-                    <NeumorphicButton variant="secondary" className="w-full justify-center">
-                      Sign In
-                    </NeumorphicButton>
+                    <NeumorphicButton variant="secondary" className="w-full justify-center">Sign In</NeumorphicButton>
                   </Link>
                   <Link to="/register" className="block" onClick={() => setIsMobileMenuOpen(false)}>
-                    <NeumorphicButton className="w-full justify-center">
-                      Get Started Free
-                    </NeumorphicButton>
+                    <NeumorphicButton className="w-full justify-center">Get Started Free</NeumorphicButton>
                   </Link>
                 </>
               )}
