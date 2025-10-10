@@ -1,65 +1,99 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import AnimatedBackground from '../components/AnimatedBackground';
+import GlassCard from '../components/GlassCard';
+import NeumorphicButton from '../components/NeumorphicButton';
+import ThreeDIcon from '../components/3DIcon';
 
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-    const submitHandler = (e) => {
-        e.preventDefault();
-        console.log(email, password);
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle login logic
+    console.log('Login data:', formData);
+  };
 
-    return (
-        <div className="max-w-md mx-auto">
-            <h1 className="text-3xl font-bold text-center mb-6">Sign In</h1>
-            <form onSubmit={submitHandler} className="flex flex-col gap-4">
-                <div>
-                    <label className="block mb-1 font-medium text-gray-700">
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-blue-500"
-                        required 
-                    />
-                </div>
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
-                <div>
-                    <label className="block mb-1 font-medium text-gray-700">
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-blue-500"
-                        required 
-                    />
-                </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden flex items-center justify-center">
+      <AnimatedBackground />
+      
+      <div className="relative z-10 w-full max-w-md mx-4">
+        <GlassCard className="p-8">
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center space-x-2 mb-6">
+              <ThreeDIcon icon="⚡" gradient="from-blue-500 to-purple-600" className="w-12 h-12" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                LinkHub
+              </span>
+            </Link>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-gray-600">Sign in to your LinkHub account</p>
+          </div>
 
-                <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors mt-2"
-                >
-                    Sign In
-                </button>
-            </form>
-
-            <div className="text-center mt-4">
-                <p className="text-gray-600">
-                    New User?{" "}
-                    <Link to="/register" className="text-blue-600 hover:underline">
-                        Register here
-                    </Link>
-                </p>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Enter your email"
+                required
+              />
             </div>
-        </div>
-    );
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <NeumorphicButton 
+              type="submit" 
+              className="w-full py-4 text-lg"
+            >
+              🔑 Sign In
+            </NeumorphicButton>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-600">
+              Don't have an account?{' '}
+              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+                Sign up here
+              </Link>
+            </p>
+          </div>
+        </GlassCard>
+      </div>
+    </div>
+  );
 };
-  
+
 export default LoginPage;
