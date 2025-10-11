@@ -7,6 +7,7 @@ import AnimatedBackground from '../components/AnimatedBackground';
 import GlassCard from '../components/GlassCard';
 import NeumorphicButton from '../components/NeumorphicButton';
 import ThreeDIcon from '../components/3DIcon';
+import PasswordInput from '../components/PasswordInput';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -90,8 +91,7 @@ const LoginPage = () => {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 id="password"
                 name="password"
                 value={formData.password}

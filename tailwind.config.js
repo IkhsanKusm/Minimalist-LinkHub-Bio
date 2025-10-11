@@ -30,6 +30,7 @@ export default {
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'gradient': 'gradient 8s linear infinite',
+        'fade-in': 'fadeIn 0.3s ease-in-out',
       },
       keyframes: {
         float: {
@@ -40,9 +41,13 @@ export default {
           '0%': { backgroundPosition: '0% 50%' },
           '50%': { backgroundPosition: '100% 50%' },
           '100%': { backgroundPosition: '0% 50%' },
-        }
-      }
+        },
+        fadeIn: {
+          '0%': { opacity: 0, transform: 'scale(0.95)' },
+          '100%': { opacity: 1, transform: 'scale(1)' },        
+        },
     },
+  }
   },
   plugins: [],
 }

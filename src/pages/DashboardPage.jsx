@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import AuthContext from '../context/AuthContext';
+
 import GlassCard from '../components/GlassCard';
 import NeumorphicButton from '../components/NeumorphicButton';
 import DraggableLinkList from '../components/DraggableLinkList';
@@ -8,21 +13,66 @@ import ThemeCustomizer from '../components/ThemeCustomizer';
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('links');
-  const [isPro, setIsPro] = useState(false);
+    const { userInfo } = useContext(AuthContext);
+  // REMOVE MOCK DATA STATE
+  // const [user, setUser] = useState({...});
+  // const [links, setLinks] = useState([...]);
+
+  const [links, setLinks] = useState([]);
+  const [userProfile, setUserProfile] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const isPro = userInfo?.isProUser || false;
+
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState(null);
+
+  // const [user, setUser] = useState({
+  //   username: 'johndoe',
+  //   bio: 'Digital creator sharing amazing content ✨',
+  //   avatar: ''
+  // });
   
-  const [user, setUser] = useState({
-    username: 'johndoe',
-    bio: 'Digital creator sharing amazing content ✨',
-    avatar: ''
-  });
-  
-  const [links, setLinks] = useState([
-    { id: '1', title: 'Instagram', url: 'https://instagram.com/johndoe', type: 'standard', clicks: 123 },
-    { id: '2', title: 'My Portfolio', url: 'https://portfolio.com', type: 'standard', clicks: 45 },
-    { id: '3', title: 'YouTube', url: 'https://youtube.com', type: 'video', clicks: 89 }
-  ]);
+  // const [links, setLinks] = useState([
+  //   { id: '1', title: 'Instagram', url: 'https://instagram.com/johndoe', type: 'standard', clicks: 123 },
+  //   { id: '2', title: 'My Portfolio', url: 'https://portfolio.com', type: 'standard', clicks: 45 },
+  //   { id: '3', title: 'YouTube', url: 'https://youtube.com', type: 'video', clicks: 89 }
+  // ]);
+
+  // --- FETCH DATA FROM BACKEND ---
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      try {
+        // Fetch links and profile in parallel
+        const [linksRes, profileRes] = await Promise.all([
+          axios.get('http://localhost:5001/api/links', config),
+          axios.get('http://localhost:5001/api/users/profile', config)
+        ]);
+
+        setLinks(linksRes.data);
+        setUserProfile(profileRes.data);
+
+      } catch (err) {
+        setError('Failed to fetch data. Please try again.');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (userInfo) {
+      fetchData();
+    }
+  }, [userInfo]); // Re-fetch if userInfo changes
 
   const [currentTheme, setCurrentTheme] = useState('default');
 
@@ -51,6 +101,14 @@ const DashboardPage = () => {
     setLinks(reorderedLinks);
   };
 
+  if (isLoading) {
+    return <div className="pt-32 text-center">Loading your dashboard...</div>;
+  }
+
+  if (error) {
+    return <div className="pt-32 text-center text-red-500">{error}</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -61,10 +119,10 @@ const DashboardPage = () => {
             <GlassCard className="p-6 sticky top-24">
               <div className="space-y-1">
                 {[
-                  { id: 'links', label: '🔗 My Links', icon: '🔗' },
-                  { id: 'profile', label: '👤 Profile', icon: '👤' },
-                  { id: 'themes', label: '🎨 Themes', icon: '🎨' },
-                  { id: 'analytics', label: '📊 Analytics', icon: '📊' }
+                  { id: 'links', label: '🔗 My Links' },
+                  { id: 'profile', label: '👤 Profile' },
+                  { id: 'themes', label: '🎨 Themes' },
+                  { id: 'analytics', label: '📊 Analytics' }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -84,7 +142,7 @@ const DashboardPage = () => {
               </div>
 
               {/* Pro Upgrade Banner */}
-              {!isPro && (
+              {/* {!isPro && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl text-white">
                   <div className="text-sm font-semibold mb-1">🚀 Go Pro</div>
                   <div className="text-xs opacity-90 mb-3">Unlock advanced features</div>
@@ -96,7 +154,7 @@ const DashboardPage = () => {
                     Upgrade Now
                   </NeumorphicButton>
                 </div>
-              )}
+              )} */}
             </GlassCard>
           </div>
 
@@ -119,6 +177,13 @@ const DashboardPage = () => {
                   </NeumorphicButton>
                 </div>
 
+                {/* --- DYNAMIC CONTENT --- */}
+                {isLoading ? (
+                  <div className="text-center py-12">Loading your links...</div>
+                ) : error ? (
+                  <div className="text-center py-12 text-red-500">{error}</div>
+                ) : (
+                  <>
                 <DraggableLinkList
                   links={links}
                   onReorder={handleReorderLinks}
@@ -140,13 +205,15 @@ const DashboardPage = () => {
                       Create Your First Link
                     </NeumorphicButton>
                   </div>
+                  )}
+                </>
                 )}
               </GlassCard>
             )}
 
             {activeTab === 'profile' && (
               <ProfileEditor 
-                user={user}
+                user={userInfo}
                 onSave={(updatedUser) => setUser(updatedUser)}
               />
             )}
@@ -191,9 +258,9 @@ const DashboardPage = () => {
                     <div className="text-6xl mb-4">📊</div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">Pro Feature</h3>
                     <p className="text-gray-600 mb-6">Upgrade to Pro to view detailed analytics</p>
-                    <NeumorphicButton onClick={() => setIsPro(true)}>
+                    {/* <NeumorphicButton onClick={() => setIsPro(true)}>
                       🚀 Upgrade to Pro
-                    </NeumorphicButton>
+                    </NeumorphicButton> */}
                   </div>
                 )}
               </GlassCard>

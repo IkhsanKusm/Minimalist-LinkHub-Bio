@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
+import { Link, Youtube, Image as ImageIcon, ShoppingCart, X } from 'lucide-react';
 
 const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
   const [formData, setFormData] = useState({
@@ -12,11 +14,10 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
 
   useEffect(() => {
     if (link) {
-      setFormData(link);
+      setFormData({ title: link.title, url: link.url, type: link.type });
     } else {
       setFormData({ title: '', url: '', type: 'standard' });
     }
-    setErrors({});
   }, [link, isOpen]);
 
   const validateForm = () => {
@@ -51,220 +52,83 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
   };
 
   const linkTypes = [
-    { 
-      value: 'standard', 
-      label: '🔗 Standard Link', 
-      description: 'Regular website link',
-      available: true
-    },
-    { 
-      value: 'video', 
-      label: '🎥 Video Embed', 
-      description: 'Embed YouTube/Vimeo videos',
-      available: true
-    },
-    { 
-      value: 'image', 
-      label: '🖼️ Image Embed', 
-      description: 'Show image previews',
-      available: isPro,
-      pro: true
-    },
-    { 
-      value: 'product', 
-      label: '🛒 Product Card', 
-      description: 'Product showcase with pricing',
-      available: isPro,
-      pro: true
-    }
+    { value: 'standard', label: 'Standard', icon: <Link size={24} />, pro: false },
+    { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: false },
+    { value: 'image', label: 'Image', icon: <ImageIcon size={24} />, pro: true },
+    { value: 'product', label: 'Product', icon: <ShoppingCart size={24} />, pro: true },
   ];
 
   const handleSave = () => {
-    if (validateForm()) {
-      onSave(formData);
+    // Basic validation
+    if (!formData.title || !formData.url) {
+      alert('Title and URL are required.');
+      return;
     }
+    onSave(formData);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <GlassCard className="w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6 sticky top-0 bg-white py-4">
-          <h2 className="text-2xl font-bold text-gray-900">
-            {link ? 'Edit Link' : 'Add New Link'}
-          </h2>
-          <button 
-            onClick={onClose} 
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            ✕
+    <div className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+      <GlassCard className="w-full max-w-lg p-0">
+        <div className="p-6 flex justify-between items-center border-b border-white/20">
+          <h2 className="text-2xl font-bold text-gray-900">{link ? 'Edit Link' : 'Add New Link'}</h2>
+          <button onClick={onClose} className="p-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors">
+            <X size={24} />
           </button>
         </div>
 
-        <div className="space-y-4">
-          {/* Link Type Selection */}
+        <div className="p-6 space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Link Type
-            </label>
-            <div className="grid grid-cols-2 gap-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Link Type</label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {linkTypes.map((type) => (
                 <button
                   key={type.value}
                   type="button"
-                  disabled={!type.available}
+                  disabled={type.pro && !isPro}
                   onClick={() => setFormData(prev => ({ ...prev, type: type.value }))}
-                  className={`
-                    p-3 rounded-xl border-2 text-left transition-all
-                    ${formData.type === type.value
-                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                      : 'border-gray-200 hover:border-gray-300'
-                    }
-                    ${!type.available ? 'opacity-50 cursor-not-allowed' : ''}
-                  `}
+                  className={`group p-4 rounded-xl border-2 text-center transition-all duration-300 relative
+                    ${formData.type === type.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white'}
+                    ${type.pro && !isPro ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
-                  <div className="font-medium text-gray-900 flex items-center justify-between">
-                    {type.label}
-                    {type.pro && (
-                      <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                        PRO
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-gray-600 mt-1">{type.description}</div>
+                  <div className={`mx-auto w-fit transition-transform duration-300 ${formData.type === type.value ? 'text-blue-600 scale-110' : 'text-gray-500 group-hover:text-gray-900'}`}>{type.icon}</div>
+                  <span className="block mt-2 font-medium text-sm text-gray-800">{type.label}</span>
+                  {type.pro && (
+                    <span className="absolute -top-2 -right-2 text-xs bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-semibold">PRO</span>
+                  )}
                 </button>
               ))}
             </div>
-            {errors.type && (
-              <p className="mt-2 text-sm text-red-600 flex items-center space-x-1">
-                <span>⚠️</span>
-                <span>{errors.type}</span>
-              </p>
-            )}
           </div>
 
-          {/* Title Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Link Title *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
-                ${errors.title ? 'border-red-300 ring-2 ring-red-200' : 'border-gray-200'}
-              `}
-              placeholder="e.g., My Instagram Profile"
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="e.g., My Portfolio"
             />
-            {errors.title && (
-              <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-            )}
           </div>
 
-          {/* URL Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">URL *</label>
             <input
               type="url"
               value={formData.url}
               onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-              className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
-                ${errors.url ? 'border-red-300 ring-2 ring-red-200' : 'border-gray-200'}
-              `}
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="https://example.com"
             />
-            {errors.url && (
-              <p className="mt-1 text-sm text-red-600">{errors.url}</p>
-            )}
           </div>
+        </div>
 
-          {/* Dynamic Fields Based on Type */}
-          {formData.type === 'product' && (
-            <div className="space-y-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
-              <div className="flex items-center space-x-2 text-amber-800 mb-3">
-                <span>⭐</span>
-                <span className="font-medium">Product Information</span>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-amber-800 mb-2">
-                  Price
-                </label>
-                <input
-                  type="text"
-                  placeholder="$49.99"
-                  className="w-full px-3 py-2 bg-white border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-amber-800 mb-2">
-                  Product Image URL
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://example.com/product-image.jpg"
-                  className="w-full px-3 py-2 bg-white border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-amber-800 mb-2">
-                  Description
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Brief product description..."
-                  className="w-full px-3 py-2 bg-white border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-            </div>
-          )}
-
-          {formData.type === 'image' && (
-            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="flex items-center space-x-2 text-blue-800">
-                <span>🖼️</span>
-                <span className="font-medium">Image Preview Enabled</span>
-              </div>
-              <p className="text-sm text-blue-600 mt-1">
-                Visitors will see an image preview of your link
-              </p>
-            </div>
-          )}
-
-          {formData.type === 'video' && (
-            <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
-              <div className="flex items-center space-x-2 text-purple-800">
-                <span>🎥</span>
-                <span className="font-medium">Video Embed Enabled</span>
-              </div>
-              <p className="text-sm text-purple-600 mt-1">
-                Supports YouTube, Vimeo, and other video platforms
-              </p>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex space-x-3 pt-4 sticky bottom-0 bg-white py-4">
-            <NeumorphicButton
-              variant="secondary"
-              onClick={onClose}
-              className="flex-1"
-            >
-              Cancel
-            </NeumorphicButton>
-            <NeumorphicButton
-              onClick={handleSave}
-              className="flex-1"
-            >
-              {link ? '💾 Update' : '✨ Create'} Link
-            </NeumorphicButton>
-          </div>
+        <div className="p-6 flex justify-end space-x-3 bg-gray-50/50 rounded-b-2xl">
+          <NeumorphicButton variant="secondary" onClick={onClose}>Cancel</NeumorphicButton>
+          <NeumorphicButton onClick={handleSave}>{link ? 'Save Changes' : 'Create Link'}</NeumorphicButton>
         </div>
       </GlassCard>
     </div>

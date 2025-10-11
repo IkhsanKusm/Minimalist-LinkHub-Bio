@@ -38,7 +38,7 @@ const SortableLinkItem = ({ link, onEdit, onDelete }) => {
       {...attributes}
       {...listeners}
       className={`
-        p-4 bg-white rounded-xl border-2 transition-all duration-300 cursor-grab
+        p-4 bg-white rounded-xl border-2 transition-all duration-50 cursor-grab
         ${isDragging 
           ? 'border-blue-500 shadow-lg rotate-2 z-50' 
           : 'border-gray-200 hover:border-blue-300'
