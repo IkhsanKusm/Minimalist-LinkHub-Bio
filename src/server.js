@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const linkRoutes = require('./routes/linkRoutes');
@@ -15,6 +16,7 @@ connectDB();
 const app = express();
 
 // This is a middleware that allows app to accept JSON in the body of requests
+app.use(cors());
 app.use(express.json());
 
 // A simple test route to make sure the server is working

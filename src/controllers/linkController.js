@@ -25,15 +25,18 @@ const createLink = asyncHandler(async (req, res) => {
         throw new Error('Please add a title and URL');
     }
 
+    if (!req.user || !req.user._id) {
+        res.status(401);
+        throw new Error('Not authorized, user ID not found in request');
+    }
+
     const link = await Link.create({
         title,
         url,
-        type, // This can be 'Standard', 'Video Embed', etc
+        type: type || 'standard',
         user: req.user._id, // Associate the link with the logged-in user
     });
-
-    const createdLink = await link.save();
-    res.status(201).json(createdLink);
+    res.status(201).json(link);
 });
 
 /**

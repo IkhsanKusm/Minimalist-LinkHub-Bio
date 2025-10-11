@@ -14,7 +14,6 @@ const protect = asyncHandler(async (req, res, next) => {
         // Extract the token from the header (it's in the format "Bearer TOKEN")
         token = req.headers.authorization.split(' ')[1];
 
-        // Verify the token using our secret
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         // Find the user by the ID that was in the token
@@ -26,7 +25,7 @@ const protect = asyncHandler(async (req, res, next) => {
         } catch (error) {
         console.error(error);
         res.status(401);
-        throw new Error('Not authorized');
+        throw new Error('Not authorized, token failed');
         }
     }
 

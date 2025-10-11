@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const linkSchema = new mongoose.Schema({
-  // This creates a reference to a User document.
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -17,18 +16,17 @@ const linkSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  clickCount: {
+  clicks: {
     type: Number,
     default: 0,
   },
-  // As per the revised design, this field will handle different link types.
   type: {
     type: String,
-    enum: ['Standard', 'Video Embed', 'Image Embed'],
-    default: 'Standard',
+    enum: ['standard', 'video', 'image', 'product'],
+    default: 'standard',
   },
   // Drag-and-drop reordering. Adding an order index.
-  orderIndex: {
+  order: {
     type: Number,
     default: 0,
   }
@@ -37,5 +35,4 @@ const linkSchema = new mongoose.Schema({
 });
 
 const Link = mongoose.model('Link', linkSchema);
-
 module.exports = Link;
