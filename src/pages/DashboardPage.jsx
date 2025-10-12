@@ -9,14 +9,12 @@ import NeumorphicButton from '../components/NeumorphicButton';
 import DraggableLinkList from '../components/DraggableLinkList';
 import LinkEditorModal from '../components/LinkEditorModal';
 import ProfileEditor from '../components/ProfileEditor';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 import ThemeCustomizer from '../components/ThemeCustomizer';
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('links');
-    const { userInfo } = useContext(AuthContext);
-  // REMOVE MOCK DATA STATE
-  // const [user, setUser] = useState({...});
-  // const [links, setLinks] = useState([...]);
+  const { userInfo } = useContext(AuthContext);
 
   const [links, setLinks] = useState([]);
   const [userProfile, setUserProfile] = useState({});
@@ -24,21 +22,12 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
 
   const isPro = userInfo?.isProUser || false;
-
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState(null);
-
-  // const [user, setUser] = useState({
-  //   username: 'johndoe',
-  //   bio: 'Digital creator sharing amazing content ✨',
-  //   avatar: ''
-  // });
-  
-  // const [links, setLinks] = useState([
-  //   { id: '1', title: 'Instagram', url: 'https://instagram.com/johndoe', type: 'standard', clicks: 123 },
-  //   { id: '2', title: 'My Portfolio', url: 'https://portfolio.com', type: 'standard', clicks: 45 },
-  //   { id: '3', title: 'YouTube', url: 'https://youtube.com', type: 'video', clicks: 89 }
-  // ]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingLinkId, setDeletingLinkId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('default');
 
   // --- FETCH DATA FROM BACKEND ---
   useEffect(() => {
@@ -74,27 +63,66 @@ const DashboardPage = () => {
     }
   }, [userInfo]); // Re-fetch if userInfo changes
 
-  const [currentTheme, setCurrentTheme] = useState('default');
+  // --- FULLY IMPLEMENTED CRUD HANDLERS ---
 
-  const handleSaveLink = (linkData) => {
-    if (editingLink) {
-      setLinks(links.map(link => 
-        link.id === editingLink.id ? { ...link, ...linkData } : link
-      ));
-    } else {
-      const newLink = {
-        id: Date.now().toString(),
-        clicks: 0,
-        ...linkData
-      };
-      setLinks([...links, newLink]);
+  const handleSaveLink = async (linkData) => {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    try {
+      if (editingLink) {
+        // --- UPDATE (PUT) ---
+        const { data: updatedLink } = await axios.put(
+          `http://localhost:5001/api/links/${editingLink._id}`,
+          linkData,
+          config
+        );
+        setLinks(links.map(link => (link._id === updatedLink._id ? updatedLink : link)));
+      } else {
+        // --- CREATE (POST) ---
+        const { data: newLink } = await axios.post(
+          'http://localhost:5001/api/links',
+          linkData,
+          config
+        );
+        setLinks([...links, newLink]);
+      }
+      setIsLinkModalOpen(false);
+      setEditingLink(null);
+    } catch (err) {
+      console.error('Failed to save link:', err);
+      alert('Error: Could not save link.');
     }
-    setIsLinkModalOpen(false);
-    setEditingLink(null);
   };
 
-  const handleDeleteLink = (linkId) => {
-    setLinks(links.filter(link => link.id !== linkId));
+  const openDeleteConfirmation = (linkId) => {
+    setDeletingLinkId(linkId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteLink = async () => {
+    if (!deletingLinkId) return;
+
+    setIsDeleting(true);
+    try {
+      const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+      // --- DELETE ---
+      await axios.delete(`http://localhost:5001/api/links/${deletingLinkId}`, config);
+      setLinks(links.filter(link => link._id !== deletingLinkId));
+      
+      // Close modal and reset state
+      setIsDeleteModalOpen(false);
+      setDeletingLinkId(null);
+    } catch (err) {
+      console.error('Failed to delete link:', err);
+      alert('Error: Could not delete link.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleReorderLinks = (reorderedLinks) => {
@@ -142,7 +170,7 @@ const DashboardPage = () => {
               </div>
 
               {/* Pro Upgrade Banner */}
-              {/* {!isPro && (
+              {!isPro && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl text-white">
                   <div className="text-sm font-semibold mb-1">🚀 Go Pro</div>
                   <div className="text-xs opacity-90 mb-3">Unlock advanced features</div>
@@ -154,7 +182,7 @@ const DashboardPage = () => {
                     Upgrade Now
                   </NeumorphicButton>
                 </div>
-              )} */}
+              )}
             </GlassCard>
           </div>
 
@@ -191,7 +219,7 @@ const DashboardPage = () => {
                     setEditingLink(link);
                     setIsLinkModalOpen(true);
                   }}
-                  onDelete={handleDeleteLink}
+                  onDelete={openDeleteConfirmation}
                 />
 
                 {links.length === 0 && (
@@ -213,8 +241,8 @@ const DashboardPage = () => {
 
             {activeTab === 'profile' && (
               <ProfileEditor 
-                user={userInfo}
-                onSave={(updatedUser) => setUser(updatedUser)}
+                user={userProfile}
+                onSave={(updatedUser) => setUserProfile(updatedUser)}
               />
             )}
 
@@ -258,9 +286,9 @@ const DashboardPage = () => {
                     <div className="text-6xl mb-4">📊</div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">Pro Feature</h3>
                     <p className="text-gray-600 mb-6">Upgrade to Pro to view detailed analytics</p>
-                    {/* <NeumorphicButton onClick={() => setIsPro(true)}>
+                    <NeumorphicButton onClick={() => setIsPro(true)}>
                       🚀 Upgrade to Pro
-                    </NeumorphicButton> */}
+                    </NeumorphicButton>
                   </div>
                 )}
               </GlassCard>
@@ -279,6 +307,17 @@ const DashboardPage = () => {
         link={editingLink}
         onSave={handleSaveLink}
         isPro={isPro}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeletingLinkId(null);
+        }}
+        onConfirm={confirmDeleteLink}
+        isLoading={isDeleting}
       />
     </div>
   );

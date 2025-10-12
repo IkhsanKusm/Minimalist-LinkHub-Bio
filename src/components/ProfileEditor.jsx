@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import axios from 'axios';
+import AuthContext from '../context/AuthContext';
 import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
 
 const ProfileEditor = ({ user, onSave }) => {
+  const { userInfo } = useContext(AuthContext);
   const [formData, setFormData] = useState({
+    avatar: user?.avatar || '',
     username: user?.username || '',
     bio: user?.bio || '',
-    avatar: user?.avatar || ''
+    profilePhotoUrl: user?.profilePhotoUrl || '',
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = () => {
-    onSave(formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      const { data: updatedUser } = await axios.put(
+        'http://localhost:5001/api/users/profile',
+        formData,
+        config
+      );
+      onSave(updatedUser); // Update the parent state
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      alert('Error: Could not update profile.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -20,16 +44,12 @@ const ProfileEditor = ({ user, onSave }) => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Profile Settings</h2>
         {!isEditing ? (
-          <NeumorphicButton onClick={() => setIsEditing(true)}>
-            ✏️ Edit Profile
-          </NeumorphicButton>
+          <NeumorphicButton onClick={() => setIsEditing(true)}>✏️ Edit Profile</NeumorphicButton>
         ) : (
           <div className="flex space-x-2">
-            <NeumorphicButton variant="secondary" onClick={() => setIsEditing(false)}>
-              Cancel
-            </NeumorphicButton>
-            <NeumorphicButton onClick={handleSave}>
-              💾 Save
+            <NeumorphicButton variant="secondary" onClick={() => setIsEditing(false)}>Cancel</NeumorphicButton>
+            <NeumorphicButton onClick={handleSave} disabled={isLoading}>
+              {isLoading ? 'Saving...' : '💾 Save'}
             </NeumorphicButton>
           </div>
         )}

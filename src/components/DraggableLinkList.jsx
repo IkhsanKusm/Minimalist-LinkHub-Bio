@@ -24,7 +24,7 @@ const SortableLinkItem = ({ link, onEdit, onDelete }) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: link.id });
+  } = useSortable({ id: link._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -35,8 +35,6 @@ const SortableLinkItem = ({ link, onEdit, onDelete }) => {
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
       className={`
         p-4 bg-white rounded-xl border-2 transition-all duration-50 cursor-grab
         ${isDragging 
@@ -47,32 +45,34 @@ const SortableLinkItem = ({ link, onEdit, onDelete }) => {
       `}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="text-2xl opacity-60 hover:opacity-100 transition-opacity">👆</div>
+        <div 
+          {...attributes} 
+          {...listeners} 
+          className="flex flex-grow items-center space-x-4 cursor-grab active:cursor-grabbing"
+        >
+          <div className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity">
+            👆
+          </div>
           <div>
             <h3 className="font-semibold text-gray-900">{link.title}</h3>
             <p className="text-sm text-gray-600">{link.url}</p>
             {link.clicks !== undefined && (
-              <p className="text-xs text-blue-600 mt-1">{link.clicks} clicks</p>
+              <p className="text-xs text-blue-600 mt-1">{link.clicks} click{link.clicks !== 1 && 's'}</p>
             )}
           </div>
         </div>
         <div className="flex space-x-2">
           <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(link);
-            }} 
+            onClick={() => onEdit(link)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            onPointerDown={(e) => e.stopPropagation()}
           >
             ✏️
           </button>
           <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(link.id);
-            }} 
+            onClick={() => onDelete(link._id)}
             className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+            onPointerDown={(e) => e.stopPropagation()}
           >
             🗑️
           </button>
@@ -94,8 +94,8 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = links.findIndex((link) => link.id === active.id);
-      const newIndex = links.findIndex((link) => link.id === over.id);
+      const oldIndex = links.findIndex((link) => link._id === active.id);
+      const newIndex = links.findIndex((link) => link._id === over.id);
 
       const reorderedLinks = arrayMove(links, oldIndex, newIndex);
       onReorder(reorderedLinks);
@@ -108,11 +108,11 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={links.map(link => link.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext items={links.map(link => link._id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           {links.map((link) => (
             <SortableLinkItem
-              key={link.id}
+              key={link._id}
               link={link}
               onEdit={onEdit}
               onDelete={onDelete}

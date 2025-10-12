@@ -10,7 +10,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
     url: '',
     type: 'standard'
   });
-  const [errors, setErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (link) {
@@ -18,6 +18,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
     } else {
       setFormData({ title: '', url: '', type: 'standard' });
     }
+    setErrorMessage(''); // Clear errors when modal opens/closes
   }, [link, isOpen]);
 
   const validateForm = () => {
@@ -36,9 +37,6 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
     if ((formData.type === 'product' || formData.type === 'image') && !isPro) {
       newErrors.type = 'This feature requires Pro subscription';
     }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const isValidUrl = (string) => {
@@ -53,18 +51,33 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
 
   const linkTypes = [
     { value: 'standard', label: 'Standard', icon: <Link size={24} />, pro: false },
-    { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: false },
-    { value: 'image', label: 'Image', icon: <ImageIcon size={24} />, pro: true },
+    { value: 'image', label: 'Image', icon: <ImageIcon size={24} />, pro: false },
+    { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: true },
     { value: 'product', label: 'Product', icon: <ShoppingCart size={24} />, pro: true },
   ];
 
   const handleSave = () => {
+    setErrorMessage(''); // Clear previous errors
     // Basic validation
-    if (!formData.title || !formData.url) {
-      alert('Title and URL are required.');
+    if (!formData.title || formData.title.trim() === '') {
+      setErrorMessage('Link title cannot be empty.');
       return;
     }
+    if (!formData.url || formData.url.trim() === '') {
+      setErrorMessage('Link URL cannot be empty.');
+      return;
+    }
+
+    // Basic URL format validation (optional, but good for UX)
+    try {
+      new URL(formData.url);
+    } catch (e) {
+      setErrorMessage('Please enter a valid URL (e.g., https://example.com)');
+      return;
+    }
+
     onSave(formData);
+    // onClose(); // onClose will be called by parent if onSave succeeds
   };
 
   if (!isOpen) return null;
@@ -80,6 +93,13 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
         </div>
 
         <div className="p-6 space-y-6">
+          {errorMessage && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center space-x-2">
+              <span>⚠️</span>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Link Type</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -111,6 +131,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="e.g., My Portfolio"
+              required
             />
           </div>
 
@@ -122,6 +143,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
               onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
               className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="https://example.com"
+              required
             />
           </div>
         </div>
