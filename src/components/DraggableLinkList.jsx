@@ -51,14 +51,16 @@ const SortableLinkItem = ({ link, onEdit, onDelete, onHover, onLeave }) => {
         <div 
           {...attributes} 
           {...listeners} 
-          className="flex flex-grow items-center space-x-4 cursor-grab active:cursor-grabbing"
+          className="flex flex-grow items-center space-x-4 cursor-grab active:cursor-grabbing min-w-0"
         >
           <div className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity">
             👆
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">{link.title}</h3>
-            <p className="text-sm text-gray-600">{link.url}</p>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-gray-900 truncate">{link.title}</h3>
+            <p className="text-sm text-gray-600 truncate" title={link.url}>
+              {link.url}
+            </p>
             {link.clicks !== undefined && (
               <p className="text-xs text-blue-600 mt-1">{link.clicks} click{link.clicks !== 1 && 's'}</p>
             )}
