@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
 import { Link, Youtube, Image as ImageIcon, ShoppingCart, X } from 'lucide-react';
+import { getLinkDetails, isValidUrl } from '../utils/linkParser';
 
 const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
   const [formData, setFormData] = useState({
@@ -10,74 +11,64 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
     url: '',
     type: 'standard'
   });
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errors, setErrors] = useState({});
+  const [preview, setPreview] = useState({ type: 'standard' });
 
   useEffect(() => {
     if (link) {
       setFormData({ title: link.title, url: link.url, type: link.type });
+      setPreview(getLinkDetails(link.url));
     } else {
       setFormData({ title: '', url: '', type: 'standard' });
+      setPreview({ type: 'standard' });
     }
-    setErrorMessage(''); // Clear errors when modal opens/closes
+    setErrors({}); // Clear errors when modal opens/closes
   }, [link, isOpen]);
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    }
-
-    if (!formData.url.trim()) {
-      newErrors.url = 'URL is required';
-    } else if (!isValidUrl(formData.url)) {
-      newErrors.url = 'Please enter a valid URL';
-    }
-
-    if ((formData.type === 'product' || formData.type === 'image') && !isPro) {
-      newErrors.type = 'This feature requires Pro subscription';
-    }
-  };
-
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    // eslint-disable-next-line no-unused-vars
-    } catch (_) {
-      return false;
-    }
-  };
 
   const linkTypes = [
     { value: 'standard', label: 'Standard', icon: <Link size={24} />, pro: false },
     { value: 'image', label: 'Image', icon: <ImageIcon size={24} />, pro: false },
-    { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: true },
+    { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: false },
     { value: 'product', label: 'Product', icon: <ShoppingCart size={24} />, pro: true },
   ];
 
+  const handleUrlChange = (e) => {
+    const newUrl = e.target.value;
+    setFormData(prev => ({ ...prev, url: newUrl }));
+
+    if (isValidUrl(newUrl)) {
+      const details = getLinkDetails(newUrl);
+      setPreview(details);
+      // Auto-select link type if it's a special type
+      if (details.type === 'image' || details.type === 'video') {
+        setFormData(prev => ({ ...prev, type: details.type }));
+      }
+    } else {
+      setPreview({ type: 'standard' });
+    }
+  };
+
   const handleSave = () => {
-    setErrorMessage(''); // Clear previous errors
-    // Basic validation
-    if (!formData.title || formData.title.trim() === '') {
-      setErrorMessage('Link title cannot be empty.');
-      return;
+    const newErrors = {};
+    if (!formData.title.trim()) {
+      newErrors.title = 'Title cannot be empty.';
     }
-    if (!formData.url || formData.url.trim() === '') {
-      setErrorMessage('Link URL cannot be empty.');
+    if (!formData.url.trim()) {
+      newErrors.url = 'URL cannot be empty.';
+    } else if (!isValidUrl(formData.url)) {
+      newErrors.url = 'Please enter a valid URL (e.g., example.com)';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    // Basic URL format validation (optional, but good for UX)
-    try {
-      new URL(formData.url);
-    } catch (e) {
-      setErrorMessage('Please enter a valid URL (e.g., https://example.com)');
-      return;
+    let finalUrl = formData.url;
+    if (!finalUrl.startsWith('http')) {
+      finalUrl = `https://` + finalUrl;
     }
-
-    onSave(formData);
-    // onClose(); // onClose will be called by parent if onSave succeeds
+    onSave({ ...formData, url: finalUrl });
   };
 
   if (!isOpen) return null;
@@ -93,10 +84,10 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
         </div>
 
         <div className="p-6 space-y-6">
-          {errorMessage && (
+          {errors.general && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center space-x-2">
               <span>⚠️</span>
-              <span>{errorMessage}</span>
+              <span>{errors.general}</span>
             </div>
           )}
 
@@ -129,10 +120,13 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                errors.title ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
+              }`}
               placeholder="e.g., My Portfolio"
               required
             />
+            {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title}</p>}
           </div>
 
           <div>
@@ -140,13 +134,47 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
             <input
               type="url"
               value={formData.url}
-              onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              onChange={handleUrlChange}
+              className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                errors.url ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
+              }`}
               placeholder="https://example.com"
               required
             />
+            {errors.url && <p className="text-xs text-red-600 mt-1">{errors.url}</p>}
           </div>
         </div>
+
+        {/* Live Preview Section */}
+        {preview.type !== 'standard' && (
+          <div className="p-6 border-t border-white/20">
+            <h3 className="text-sm font-medium text-gray-600 mb-3">Preview</h3>
+            <div className="rounded-xl overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center aspect-video animate-fade-in">
+              {preview.type === 'image' && (
+                <img src={preview.src} alt="Link preview" className="w-full h-full object-cover" />
+              )}
+              {preview.type === 'video' && preview.platform === 'youtube' && (
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${preview.videoId}`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              )}
+              {preview.type === 'video' && preview.platform === 'vimeo' && (
+                <iframe
+                  className="w-full h-full"
+                  src={`https://player.vimeo.com/video/${preview.videoId}`}
+                  title="Vimeo video player"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen></iframe>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="p-6 flex justify-end space-x-3 bg-gray-50/50 rounded-b-2xl">
           <NeumorphicButton variant="secondary" onClick={onClose}>Cancel</NeumorphicButton>
