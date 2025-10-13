@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { getLinkDetails } from '../utils/linkParser';
+import React, { useState, useLayoutEffect, useRef } from 'react';
+import { getLinkDetails } from '../utils/linkParser'; 
 import {
   DndContext,
   closestCenter,
@@ -36,7 +36,7 @@ const SortableLinkItem = ({ link, onEdit, onDelete, onHover, onLeave }) => {
     <div
       ref={setNodeRef}
       style={style}
-      onMouseEnter={() => onHover(link)}
+      onMouseEnter={(e) => onHover(link, e.currentTarget)}
       onMouseLeave={onLeave}
       className={`
         p-4 bg-white rounded-xl border-2 transition-all duration-50 cursor-grab
@@ -87,14 +87,49 @@ const SortableLinkItem = ({ link, onEdit, onDelete, onHover, onLeave }) => {
   );
 };
 
-const LinkPreviewCard = ({ link }) => {
+const LinkPreviewCard = ({ link, containerRef }) => {
+  const [style, setStyle] = useState({});
+  const cardRef = useRef(null);
+
+  useLayoutEffect(() => {
+    if (link && containerRef.current && cardRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const itemRect = link.element.getBoundingClientRect();
+      const cardRect = cardRef.current.getBoundingClientRect();
+      const gap = 16;
+
+      let leftPosition;
+      const rightEdge = itemRect.right + gap + cardRect.width;
+      const leftEdge = itemRect.left - gap - cardRect.width;
+
+      // Prefer to position on the right
+      if (rightEdge < window.innerWidth) {
+        leftPosition = itemRect.width + gap;
+      // If not enough space on the right, try the left
+      } else if (leftEdge > 0) {
+        leftPosition = -cardRect.width - gap;
+      // If not enough space on either side, align it to the right edge of the viewport
+      } else {
+        leftPosition = window.innerWidth - containerRect.left - cardRect.width - gap;
+      }
+
+      setStyle({
+        position: 'absolute',
+        top: `${itemRect.top - containerRect.top}px`,
+        left: `${leftPosition}px`,
+        transform: 'translateY(-50%)',
+        opacity: 1,
+      });
+    }
+  }, [link, containerRef]);
+
   if (!link) return null;
 
   const details = getLinkDetails(link.url);
   if (details.type === 'standard') return null;
 
   return (
-    <div className="fixed top-1/2 -translate-y-1/2 right-full mr-4 w-80 bg-white shadow-2xl rounded-2xl overflow-hidden z-50 animate-fade-in pointer-events-none">
+    <div ref={cardRef} style={style} className="w-80 bg-white shadow-2xl rounded-2xl overflow-hidden z-50 transition-opacity duration-200 pointer-events-none opacity-0">
       <div className="aspect-video bg-gray-100 flex items-center justify-center">
         {details.type === 'image' && (
           <img src={details.src} alt="Link preview" className="w-full h-full object-cover" />
@@ -136,6 +171,7 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
   );
 
   const [hoveredLink, setHoveredLink] = useState(null);
+  const containerRef = useRef(null);
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -149,13 +185,17 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
     }
   };
 
+  const handleHover = (link, element) => {
+    setHoveredLink({ ...link, element });
+  }
+
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <div className="relative">
+      <div className="relative" ref={containerRef}>
         <SortableContext items={links.map(link => link._id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-3">
             {links.map((link) => (
@@ -164,13 +204,13 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
                 link={link}
                 onEdit={onEdit}
                 onDelete={onDelete}
-                onHover={setHoveredLink}
+                onHover={handleHover}
                 onLeave={() => setHoveredLink(null)}
               />
             ))}
           </div>
         </SortableContext>
-        <LinkPreviewCard link={hoveredLink} />
+        <LinkPreviewCard link={hoveredLink} containerRef={containerRef} />
       </div>
     </DndContext>
   );
