@@ -97,6 +97,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.bio = req.body.bio || user.bio;
     user.profilePhotoUrl = req.body.profilePhotoUrl || user.profilePhotoUrl;
     user.username = req.body.username || user.username;
+    user.theme = req.body.theme || user.theme;
+
     const updatedUser = await user.save();
     res.json({
       _id: updatedUser._id,
@@ -104,6 +106,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       email: updatedUser.email,
       bio: updatedUser.bio,
       profilePhotoUrl: updatedUser.profilePhotoUrl,
+      theme: updatedUser.theme,
     });
   } else {
     res.status(404);
@@ -125,8 +128,8 @@ const getPublicProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 
-  // Find all links associated with that user
-  const links = await Link.find({ user: user._id }).sort({ order: 1 }); // We'll use 'order' later
+  // Find all links associated with the user
+  const links = await Link.find({ user: user._id }).sort({ order: 1 });
 
   res.json({
     profile: {
@@ -134,7 +137,7 @@ const getPublicProfile = asyncHandler(async (req, res) => {
       username: user.username,
       bio: user.bio,
       profilePhotoUrl: user.profilePhotoUrl,
-      // We can add theme data here later
+      theme: user.theme,
     },
     links: links,
   });

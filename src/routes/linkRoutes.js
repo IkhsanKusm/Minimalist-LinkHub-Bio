@@ -3,7 +3,7 @@ const router = express.Router();
 const { getLinks, createLink, updateLink, deleteLink} = require('../controllers/linkController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Apply the 'protect' middleware to all these routes
+// Apply the 'protect' middleware to all routes
 router.route('/')
     .get(protect, getLinks)
     .post(protect, createLink);

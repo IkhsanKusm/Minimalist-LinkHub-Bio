@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); // Import bcrypt
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  theme: {
+    type: String,
+    default: 'default',
+  },
   isProUser: {
     type: Boolean,
     default: false, // All new users start as free users
@@ -35,7 +39,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true, // Automatically adds createdAt and updatedAt fields
 });
 
-// Add a method to the userSchema to compare entered password with hashed password
+// Method to the userSchema to compare entered password with hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
@@ -53,7 +57,6 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Create the User model
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
