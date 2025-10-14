@@ -129,6 +129,29 @@ const DashboardPage = () => {
     setLinks(reorderedLinks);
   };
 
+  const handleThemeChange = async (themeId) => {
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      // API call to update the theme
+      const { data: updatedUser } = await axios.put(
+        'http://localhost:5001/api/users/profile',
+        { theme: themeId }, // Send only the theme to be updated
+        config
+      );
+
+      // Update the local state instantly for a great UX
+      setUserProfile(prevProfile => ({ ...prevProfile, theme: updatedUser.theme }));
+    } catch (error) {
+      console.error('Failed to update theme:', error);
+      alert('Error: Could not save theme preference.');
+    }
+  };
+
   if (isLoading) {
     return <div className="pt-32 text-center">Loading your dashboard...</div>;
   }
@@ -250,8 +273,10 @@ const DashboardPage = () => {
               <GlassCard className="p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Themes</h2>
                 <ThemeCustomizer 
-                  currentTheme={currentTheme}
-                  onThemeChange={setCurrentTheme}
+                  // Pass the theme from the userProfile state
+                  currentTheme={userProfile.theme || 'default'} 
+                  // Pass the new handler function
+                  onThemeChange={handleThemeChange}
                   isPro={isPro}
                 />
               </GlassCard>

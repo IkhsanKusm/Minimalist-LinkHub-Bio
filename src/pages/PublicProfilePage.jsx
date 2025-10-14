@@ -6,19 +6,31 @@ import { getLinkDetails } from '../utils/linkParser';
 const themes = {
   default: {
     bg: 'bg-gradient-to-br from-gray-50 to-blue-100',
-    button: 'bg-white hover:bg-blue-50 text-gray-800',
     text: 'text-gray-800',
     name: 'text-gray-900',
     accent: 'text-blue-600',
-    card: 'bg-white/80 backdrop-blur-sm',
+    button: 'bg-white/80 backdrop-blur-md hover:bg-white text-gray-800 shadow-md',
   },
   sunset: {
-    bg: 'bg-gradient-to-br from-orange-50 to-red-100',
-    button: 'bg-white hover:bg-orange-50 text-gray-800',
-    text: 'text-gray-800',
-    name: 'text-gray-900',
-    accent: 'text-orange-600',
-    card: 'bg-white/80 backdrop-blur-sm',
+    bg: 'bg-gradient-to-br from-orange-100 via-red-100 to-pink-200',
+    text: 'text-orange-900',
+    name: 'text-red-900',
+    accent: 'text-red-600',
+    button: 'bg-white/80 backdrop-blur-md hover:bg-white text-orange-900 shadow-md',
+  },
+  forest: {
+    bg: 'bg-gradient-to-br from-green-100 to-teal-200',
+    text: 'text-green-900',
+    name: 'text-teal-900',
+    accent: 'text-green-600',
+    button: 'bg-white/80 backdrop-blur-md hover:bg-white text-green-900 shadow-md',
+  },
+  midnight: {
+    bg: 'bg-gradient-to-br from-gray-800 to-black',
+    text: 'text-gray-300',
+    name: 'text-white',
+    accent: 'text-blue-400',
+    button: 'bg-gray-700/50 backdrop-blur-md hover:bg-gray-600/50 text-white shadow-lg border border-gray-600',
   },
 };
 
