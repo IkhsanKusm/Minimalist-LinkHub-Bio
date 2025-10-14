@@ -1,12 +1,8 @@
-// src/pages/PublicProfilePage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { getLinkDetails } from '../utils/linkParser'; // Your excellent link parser utility
+import { getLinkDetails } from '../utils/linkParser';
 
-// --- Theme Configuration ---
-// This would ideally come from a shared config file
 const themes = {
   default: {
     bg: 'bg-gradient-to-br from-gray-50 to-blue-100',
@@ -24,7 +20,6 @@ const themes = {
     accent: 'text-orange-600',
     card: 'bg-white/80 backdrop-blur-sm',
   },
-  // ... other themes can be added here
 };
 
 const PublicProfilePage = () => {
@@ -53,12 +48,10 @@ const PublicProfilePage = () => {
     fetchProfile();
   }, [username]);
 
-  // Memoize link grouping to prevent re-calculation on every render
   const videoLinks = links.filter(link => getLinkDetails(link.url).type === 'video');
   const imageLinks = links.filter(link => getLinkDetails(link.url).type === 'image');
   const productLinks = links.filter(link => link.type === 'product');
   const standardLinks = links.filter(link => !['video', 'image', 'product'].includes(getLinkDetails(link.url).type) && link.type !== 'product');
-  // For the "Stories" section, we can use image links or create a new link type later
   const storyLinks = imageLinks.slice(0, 8);
 
   if (isLoading) {
@@ -151,7 +144,6 @@ const PublicProfilePage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {productLinks.map(link => (
                   <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`group block rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 ${activeTheme.card}`}>
-                     {/* We'll add a proper image here later when the Product feature is built */}
                     <div className="aspect-square bg-gray-200 flex items-center justify-center text-4xl opacity-50">🛍️</div>
                     <div className="p-3">
                       <p className="font-semibold truncate group-hover:text-blue-600">{link.title}</p>
@@ -165,7 +157,6 @@ const PublicProfilePage = () => {
           {/* Standard Links Section */}
           {standardLinks.length > 0 && (
             <section>
-              {/* No title needed if it's the main section */}
               <div className="space-y-4">
                 {standardLinks.map(link => (
                   <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`block rounded-full shadow-lg p-4 text-center font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${activeTheme.button}`}>
