@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const Link = require('../models/linkModel');
 const generateToken = require('../utils/generateToken');
 
 /**
@@ -110,4 +111,21 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser, getUserProfile, updateUserProfile };
+/**
+ * @desc    Get public user profile and links
+ * @route   GET /api/users/public/:username
+ * @access  Public
+ */
+const getPublicProfile = asyncHandler(async (req, res) => {
+  const user = await User.findOne({ username: req.params.username }).select('-password');
+
+  if (user) {
+    const links = await Link.find({ user: user._id }).sort({ order: 'asc' }); // Assuming you have an 'order' field
+    res.json({ user, links });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+module.exports = { registerUser, authUser, getUserProfile, updateUserProfile, getPublicProfile };
