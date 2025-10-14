@@ -112,20 +112,32 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Get public user profile and links
- * @route   GET /api/users/public/:username
+ * @desc    Get a user's public profile and links
+ * @route   GET /api/users/public-profile/:username
  * @access  Public
  */
 const getPublicProfile = asyncHandler(async (req, res) => {
+  // Find the user by username
   const user = await User.findOne({ username: req.params.username }).select('-password');
 
-  if (user) {
-    const links = await Link.find({ user: user._id }).sort({ order: 'asc' }); // Assuming you have an 'order' field
-    res.json({ user, links });
-  } else {
+  if (!user) {
     res.status(404);
     throw new Error('User not found');
   }
+
+  // Find all links associated with that user
+  const links = await Link.find({ user: user._id }).sort({ order: 1 }); // We'll use 'order' later
+
+  res.json({
+    profile: {
+      _id: user._id,
+      username: user.username,
+      bio: user.bio,
+      profilePhotoUrl: user.profilePhotoUrl,
+      // We can add theme data here later
+    },
+    links: links,
+  });
 });
 
 module.exports = { registerUser, authUser, getUserProfile, updateUserProfile, getPublicProfile };
