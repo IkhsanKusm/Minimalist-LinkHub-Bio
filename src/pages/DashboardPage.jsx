@@ -11,6 +11,7 @@ import LinkEditorModal from '../components/LinkEditorModal';
 import ProfileEditor from '../components/ProfileEditor';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 import ThemeCustomizer from '../components/ThemeCustomizer';
+import AnalyticsDashboard from '../components/AnalyticsDashboard';
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('links');
@@ -283,30 +284,10 @@ const DashboardPage = () => {
             )}
 
             {activeTab === 'analytics' && (
-              <GlassCard className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Analytics</h2>
-                {isPro ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-6 bg-blue-50 rounded-xl">
-                      <div className="text-3xl font-bold text-blue-600 mb-2">
-                        {links.reduce((total, link) => total + link.clicks, 0)}
-                      </div>
-                      <div className="text-gray-600">Total Clicks</div>
-                    </div>
-                    <div className="text-center p-6 bg-green-50 rounded-xl">
-                      <div className="text-3xl font-bold text-green-600 mb-2">
-                        {links.length}
-                      </div>
-                      <div className="text-gray-600">Active Links</div>
-                    </div>
-                    <div className="text-center p-6 bg-purple-50 rounded-xl">
-                      <div className="text-3xl font-bold text-purple-600 mb-2">
-                        {Math.round(links.reduce((total, link) => total + link.clicks, 0) / links.length) || 0}
-                      </div>
-                      <div className="text-gray-600">Avg. Clicks/Link</div>
-                    </div>
-                  </div>
-                ) : (
+              isPro ? (
+                <AnalyticsDashboard />
+              ) : (
+                <GlassCard className='p-6'>
                   <div className="text-center py-12">
                     <div className="text-6xl mb-4">📊</div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">Pro Feature</h3>
@@ -315,8 +296,8 @@ const DashboardPage = () => {
                       🚀 Upgrade to Pro
                     </NeumorphicButton>
                   </div>
-                )}
-              </GlassCard>
+                </GlassCard>
+              )
             )}
           </div>
         </div>
