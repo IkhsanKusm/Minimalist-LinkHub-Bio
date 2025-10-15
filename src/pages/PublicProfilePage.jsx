@@ -34,6 +34,28 @@ const themes = {
   },
 };
 
+// --- Click Handler Function ---
+const handleLinkClick = async (link) => {
+  try {
+    axios.post(`http://localhost:5001/api/links/track/${link._id}`);
+  } catch (error) {
+    console.error('Failed to track click:', error);
+  }
+  window.open(link.url, '_blank', 'noopener,noreferrer');
+};
+
+
+const LinkCard = ({ link }) => {
+  return (
+    <button
+      onClick={() => handleLinkClick(link)}
+      className="block w-full p-4 text-left bg-white/20 backdrop-blur-md rounded-xl font-semibold transition-all hover:bg-white/30 hover:scale-105 border border-white/30"
+    >
+      {link.title}
+    </button>
+  );
+};
+
 const PublicProfilePage = () => {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
@@ -98,7 +120,7 @@ const PublicProfilePage = () => {
                   <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 text-center group">
                     <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 transform group-hover:scale-105 transition-transform">
                       <div className="bg-white p-1 rounded-full">
-                        <img src={link.url} alt={link.title} className="w-full h-full object-cover rounded-full" />
+                        <img onClick={() => handleLinkClick(link)} src={link.url} alt={link.title} className="w-full h-full object-cover rounded-full" />
                       </div>
                     </div>
                     <p className="text-xs mt-2 w-20 truncate opacity-80">{link.title}</p>
@@ -117,13 +139,13 @@ const PublicProfilePage = () => {
                   const details = getLinkDetails(link.url);
                   return (
                     <div key={link._id} className={`flex-shrink-0 w-72 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 ${activeTheme.card}`}>
-                      <a href={link.url} target="_blank" rel="noopener noreferrer">
+                      <a href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link)}>
                         <div className="aspect-video">
                           <iframe
                             className="w-full h-full"
                             src={`https://www.youtube.com/embed/${details.videoId}?controls=0&modestbranding=1&rel=0`}
                             title={link.title}
-                            frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen
+                            frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen onClick={() => handleLinkClick(link)}
                           ></iframe>
                         </div>
                       </a>
@@ -142,7 +164,7 @@ const PublicProfilePage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {imageLinks.map(link => (
                   <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className="group block aspect-square bg-gray-100 rounded-2xl shadow-lg overflow-hidden">
-                    <img src={link.url} alt={link.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
+                    <img onClick={() => handleLinkClick(link)} src={link.url} alt={link.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
                   </a>
                 ))}
               </div>
@@ -155,7 +177,7 @@ const PublicProfilePage = () => {
               <h2 className="text-xl font-bold mb-4 px-1">Shop</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {productLinks.map(link => (
-                  <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`group block rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 ${activeTheme.card}`}>
+                  <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`group block rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 ${activeTheme.card}`}>
                     <div className="aspect-square bg-gray-200 flex items-center justify-center text-4xl opacity-50">🛍️</div>
                     <div className="p-3">
                       <p className="font-semibold truncate group-hover:text-blue-600">{link.title}</p>
@@ -171,7 +193,7 @@ const PublicProfilePage = () => {
             <section>
               <div className="space-y-4">
                 {standardLinks.map(link => (
-                  <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`block rounded-full shadow-lg p-4 text-center font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${activeTheme.button}`}>
+                  <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`block rounded-full shadow-lg p-4 text-center font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${activeTheme.button}`}>
                     {link.title}
                   </a>
                 ))}
