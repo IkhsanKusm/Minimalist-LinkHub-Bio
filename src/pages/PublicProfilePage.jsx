@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { getLinkDetails } from '../utils/linkParser';
+import VideoLinkCard from '../components/VideoLinkCard';
 
 const themes = {
   default: {
@@ -34,28 +35,6 @@ const themes = {
   },
 };
 
-// --- Click Handler Function ---
-const handleLinkClick = async (link) => {
-  try {
-    axios.post(`http://localhost:5001/api/links/track/${link._id}`);
-  } catch (error) {
-    console.error('Failed to track click:', error);
-  }
-  window.open(link.url, '_blank', 'noopener,noreferrer');
-};
-
-
-const LinkCard = ({ link }) => {
-  return (
-    <button
-      onClick={() => handleLinkClick(link)}
-      className="block w-full p-4 text-left bg-white/20 backdrop-blur-md rounded-xl font-semibold transition-all hover:bg-white/30 hover:scale-105 border border-white/30"
-    >
-      {link.title}
-    </button>
-  );
-};
-
 const PublicProfilePage = () => {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
@@ -64,6 +43,15 @@ const PublicProfilePage = () => {
   const [error, setError] = useState(null);
 
   const activeTheme = themes[profile?.theme] || themes.default;
+
+  const handleLinkClick = async (link) => {
+    try {
+      // Send the tracking request but don't wait for it to finish.
+      axios.post(`http://localhost:5001/api/links/track/${link._id}`);
+    } catch (error) {
+      console.error('Failed to track click:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -117,10 +105,10 @@ const PublicProfilePage = () => {
             <section>
               <div className="flex space-x-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
                 {storyLinks.map(link => (
-                  <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 text-center group">
+                  <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 text-center group">
                     <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 transform group-hover:scale-105 transition-transform">
                       <div className="bg-white p-1 rounded-full">
-                        <img onClick={() => handleLinkClick(link)} src={link.url} alt={link.title} className="w-full h-full object-cover rounded-full" />
+                        <img src={link.url} alt={link.title} className="w-full h-full object-cover rounded-full" />
                       </div>
                     </div>
                     <p className="text-xs mt-2 w-20 truncate opacity-80">{link.title}</p>
@@ -135,24 +123,14 @@ const PublicProfilePage = () => {
             <section>
               <h2 className="text-xl font-bold mb-4 px-1">Featured Videos</h2>
               <div className="flex space-x-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-                {videoLinks.map(link => {
-                  const details = getLinkDetails(link.url);
-                  return (
-                    <div key={link._id} className={`flex-shrink-0 w-72 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 ${activeTheme.card}`}>
-                      <a href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link)}>
-                        <div className="aspect-video">
-                          <iframe
-                            className="w-full h-full"
-                            src={`https://www.youtube.com/embed/${details.videoId}?controls=0&modestbranding=1&rel=0`}
-                            title={link.title}
-                            frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen onClick={() => handleLinkClick(link)}
-                          ></iframe>
-                        </div>
-                      </a>
-                      <p className="p-3 text-sm font-semibold truncate">{link.title}</p>
-                    </div>
-                  );
-                })}
+                {videoLinks.map(link => (
+                  <VideoLinkCard
+                    key={link._id}
+                    link={link}
+                    handleLinkClick={handleLinkClick}
+                    themeCardClass={activeTheme.card}
+                  />
+                ))}
               </div>
             </section>
           )}
@@ -163,8 +141,8 @@ const PublicProfilePage = () => {
               <h2 className="text-xl font-bold mb-4 px-1">Gallery</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {imageLinks.map(link => (
-                  <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className="group block aspect-square bg-gray-100 rounded-2xl shadow-lg overflow-hidden">
-                    <img onClick={() => handleLinkClick(link)} src={link.url} alt={link.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
+                  <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link)} className="group block aspect-square bg-gray-100 rounded-2xl shadow-lg overflow-hidden">
+                    <img src={link.url} alt={link.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
                   </a>
                 ))}
               </div>
