@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Link = require('../models/linkModel');
+const Click = require('../models/clickModel');
 
 /**
  * @desc    Get all links for the logged-in user
@@ -98,8 +99,16 @@ const trackLinkClick = asyncHandler(async (req, res) => {
   const link = await Link.findById(req.params.id);
 
   if (link) {
+    // 1. Increment the total clicks on the link itself
     link.clicks += 1;
     await link.save();
+
+    // 2. Create a new document in the clicks collection
+    await Click.create({
+      linkId: link._id,
+      userId: link.user,
+    });
+
     res.status(200).json({ message: 'Click tracked' });
   } else {
     res.status(404);
@@ -112,5 +121,5 @@ module.exports = {
     createLink,
     updateLink,
     deleteLink,
-    trackLinkClick,
+    trackLinkClick
 };

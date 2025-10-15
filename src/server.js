@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const linkRoutes = require('./routes/linkRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // Load environment variables from .env file
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 // Tell the app to use the userRoutes for any URL that starts with /api/users
 app.use('/api/users', userRoutes);
 app.use('/api/links', linkRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Use the error handling middleware
 app.use(notFound);
