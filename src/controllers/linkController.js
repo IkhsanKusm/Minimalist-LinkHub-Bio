@@ -89,9 +89,28 @@ const deleteLink = asyncHandler(async (req, res) => {
     res.json({ message: 'Link removed' });
 });
 
+/**
+ * @desc    Track a click on a link
+ * @route   POST /api/links/track/:id
+ * @access  Public
+ */
+const trackLinkClick = asyncHandler(async (req, res) => {
+  const link = await Link.findById(req.params.id);
+
+  if (link) {
+    link.clicks += 1;
+    await link.save();
+    res.status(200).json({ message: 'Click tracked' });
+  } else {
+    res.status(404);
+    throw new Error('Link not found');
+  }
+});
+
 module.exports = {
     getLinks,
     createLink,
     updateLink,
     deleteLink,
+    trackLinkClick,
 };
