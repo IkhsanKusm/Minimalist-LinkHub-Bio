@@ -29,7 +29,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
     { value: 'standard', label: 'Standard', icon: <Link size={24} />, pro: false },
     { value: 'image', label: 'Image', icon: <ImageIcon size={24} />, pro: false },
     { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: false },
-    { value: 'product', label: 'Product', icon: <ShoppingCart size={24} />, pro: true },
+    //{ value: 'product', label: 'Product', icon: <ShoppingCart size={24} />, pro: true },
   ];
 
   const handleUrlChange = (e) => {

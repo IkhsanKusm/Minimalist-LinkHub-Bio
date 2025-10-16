@@ -99,6 +99,24 @@ const AnalyticsDashboard = () => {
           ))}
         </div>
       </GlassCard>
+      
+      {/* --- TOP PRODUCTS SECTION --- */}
+      {data.topProducts && data.topProducts.length > 0 && (
+        <GlassCard className="p-6">
+          <h3 className="font-bold text-lg mb-4">Top Performing Products</h3>
+          <div className="space-y-3">
+            {data.topProducts.map((product, index) => (
+              <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <div className="font-semibold text-gray-800">{product.title}</div>
+                  <div className="text-sm text-gray-500 truncate">{product.productUrl}</div>
+                </div>
+                <div className="font-bold text-green-600 text-lg">{product.clicks} clicks</div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      )}      
     </div>
   );
 };
