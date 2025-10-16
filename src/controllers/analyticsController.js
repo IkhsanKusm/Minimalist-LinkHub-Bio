@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Click = require('../models/clickModel');
 const Link = require('../models/linkModel');
+const Product = require('../models/productModel');
 const mongoose = require('mongoose');
 
 /**
@@ -53,7 +54,13 @@ const getAnalytics = asyncHandler(async (req, res) => {
     { $project: { title: '$linkDetails.title', url: '$linkDetails.url', count: 1 } }
   ]);
 
-  // 3. Get total clicks for the period
+  // 3. Aggregate top performing products
+  const topProducts = await Product.find({ user: userId })
+    .sort({ clicks: -1 }) // Sort by the 'clicks' field on the product model
+    .limit(5)
+    .select('title productUrl clicks');
+
+  // 4. Get total clicks for the period
   const totalClicks = await Click.countDocuments({ userId, clickedAt: { $gte: startDate } });
   const totalLinks = await Link.countDocuments({ user: userId });
 
@@ -62,6 +69,7 @@ const getAnalytics = asyncHandler(async (req, res) => {
     totalLinks,
     clicksByDate,
     topLinks,
+    topProducts,
   });
 });
 

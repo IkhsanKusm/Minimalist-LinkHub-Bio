@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/productModel');
+const Click = require('../models/clickModel');
 
 /**
  * @desc    Get all products for the logged-in user
@@ -86,17 +87,20 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.json({ message: 'Product removed' });
 });
 
-/**
- * @desc    Track a click on a product
- * @route   POST /api/products/track/:id
- * @access  Public
- */
 const trackProductClick = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    product.clicks = (product.clicks || 0) + 1; // Safely increment clicks
+    // 1. Increment the total clicks on the product itself
+    product.clicks = (product.clicks || 0) + 1;
     await product.save();
+
+    // 2. CREATE A UNIFIED CLICK EVENT FOR ANALYTICS
+    await Click.create({
+      linkId: product._id, // Use product._id as the reference
+      userId: product.user,
+    });
+
     res.status(200).json({ message: 'Product click tracked' });
   } else {
     res.status(404);
