@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const Link = require('../models/linkModel');
+const Product = require('../models/productModel');
 const generateToken = require('../utils/generateToken');
 
 /**
@@ -120,7 +121,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
  * @access  Public
  */
 const getPublicProfile = asyncHandler(async (req, res) => {
-  // Find the user by username
   const user = await User.findOne({ username: req.params.username }).select('-password');
 
   if (!user) {
@@ -128,8 +128,11 @@ const getPublicProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 
-  // Find all links associated with the user
-  const links = await Link.find({ user: user._id }).sort({ order: 1 });
+  // Fetch both links and products in parallel for better performance
+  const [links, products] = await Promise.all([
+    Link.find({ user: user._id }).sort({ order: 1 }),
+    Product.find({ user: user._id }).sort({ order: 1 })
+  ]);
 
   res.json({
     profile: {
@@ -140,6 +143,7 @@ const getPublicProfile = asyncHandler(async (req, res) => {
       theme: user.theme,
     },
     links: links,
+    products: products,
   });
 });
 
