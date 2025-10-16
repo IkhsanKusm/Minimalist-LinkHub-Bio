@@ -86,9 +86,28 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.json({ message: 'Product removed' });
 });
 
+/**
+ * @desc    Track a click on a product
+ * @route   POST /api/products/track/:id
+ * @access  Public
+ */
+const trackProductClick = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  if (product) {
+    product.clicks = (product.clicks || 0) + 1; // Safely increment clicks
+    await product.save();
+    res.status(200).json({ message: 'Product click tracked' });
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
 module.exports = {
   getProducts,
   createProduct,
   updateProduct,
   deleteProduct,
+  trackProductClick,
 };
