@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
 import { X, Image as ImageIcon } from 'lucide-react';
+import { isValidUrl } from '../utils/linkParser';
 
 const ProductEditorModal = ({ isOpen, onClose, product, onSave }) => {
   const [formData, setFormData] = useState({
@@ -33,7 +34,11 @@ const ProductEditorModal = ({ isOpen, onClose, product, onSave }) => {
     const newErrors = {};
     if (!formData.title) newErrors.title = 'Title is required.';
     if (!formData.price || isNaN(formData.price) || formData.price < 0) newErrors.price = 'Please enter a valid price.';
-    if (!formData.imageUrl) newErrors.imageUrl = 'Image URL is required.';
+    if (!formData.imageUrl) {
+      newErrors.imageUrl = 'Image URL is required.';
+    } else if (!isValidUrl(formData.imageUrl)) {
+      newErrors.imageUrl = 'Please enter a valid image URL.';
+    }
     if (!formData.productUrl) newErrors.productUrl = 'Product link is required.';
     
     setErrors(newErrors);
@@ -42,7 +47,15 @@ const ProductEditorModal = ({ isOpen, onClose, product, onSave }) => {
 
   const handleSave = () => {
     if (validate()) {
-      onSave(formData);
+      // Ensure URLs have a protocol
+      const finalData = { ...formData };
+      if (finalData.imageUrl && !finalData.imageUrl.startsWith('http')) {
+        finalData.imageUrl = `https://` + finalData.imageUrl;
+      }
+      if (finalData.productUrl && !finalData.productUrl.startsWith('http')) {
+        finalData.productUrl = `https://` + finalData.productUrl;
+      }
+      onSave(finalData);
     }
   };
 
@@ -58,7 +71,7 @@ const ProductEditorModal = ({ isOpen, onClose, product, onSave }) => {
           </button>
         </div>
 
-        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
           {/* Image Preview */}
           <div className="aspect-square w-full bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden">
             {formData.imageUrl ? (
@@ -71,31 +84,62 @@ const ProductEditorModal = ({ isOpen, onClose, product, onSave }) => {
           {/* Form Fields */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
-            <input type="text" value={formData.title} onChange={(e) => setFormData(p => ({ ...p, title: e.target.value }))} className={`w-full input-field ${errors.title ? 'border-red-500' : ''}`} placeholder="Product Name" />
+            <input 
+              type="text" 
+              value={formData.title} 
+              onChange={(e) => setFormData(p => ({ ...p, title: e.target.value }))} 
+              className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.title ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'}`} 
+              placeholder="e.g., Handcrafted Leather Wallet" 
+            />
             {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea value={formData.description} onChange={(e) => setFormData(p => ({ ...p, description: e.target.value }))} className="w-full input-field" rows="3" placeholder="Briefly describe your product"></textarea>
+            <textarea 
+              value={formData.description} 
+              onChange={(e) => setFormData(p => ({ ...p, description: e.target.value }))} 
+              className="w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all border-gray-200 focus:ring-blue-500" 
+              rows="3" 
+              placeholder="Copywriting your product"
+            ></textarea>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price ($) *</label>
-              <input type="number" step="0.01" value={formData.price} onChange={(e) => setFormData(p => ({ ...p, price: e.target.value }))} className={`w-full input-field ${errors.price ? 'border-red-500' : ''}`} placeholder="e.g., 19.99" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price (Rp) *</label>
+              <input 
+                type="number" 
+                step="1000" 
+                value={formData.price} 
+                onChange={(e) => setFormData(p => ({ ...p, price: e.target.value }))} 
+                className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.price ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'}`} 
+                placeholder="e.g., 150000" 
+              />
               {errors.price && <p className="text-xs text-red-600 mt-1">{errors.price}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Image URL *</label>
-              <input type="url" value={formData.imageUrl} onChange={(e) => setFormData(p => ({ ...p, imageUrl: e.target.value }))} className={`w-full input-field ${errors.imageUrl ? 'border-red-500' : ''}`} placeholder="https://..." />
+              <input 
+                type="url" 
+                value={formData.imageUrl} 
+                onChange={(e) => setFormData(p => ({ ...p, imageUrl: e.target.value }))} 
+                className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.imageUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'}`} 
+                placeholder="https://..." 
+              />
               {errors.imageUrl && <p className="text-xs text-red-600 mt-1">{errors.imageUrl}</p>}
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Product URL *</label>
-            <input type="url" value={formData.productUrl} onChange={(e) => setFormData(p => ({ ...p, productUrl: e.target.value }))} className={`w-full input-field ${errors.productUrl ? 'border-red-500' : ''}`} placeholder="Link to purchase page" />
+            <input 
+              type="url" 
+              value={formData.productUrl} 
+              onChange={(e) => setFormData(p => ({ ...p, productUrl: e.target.value }))} 
+              className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${errors.productUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'}`} 
+              placeholder="Link to your purchase page" 
+            />
             {errors.productUrl && <p className="text-xs text-red-600 mt-1">{errors.productUrl}</p>}
           </div>
         </div>

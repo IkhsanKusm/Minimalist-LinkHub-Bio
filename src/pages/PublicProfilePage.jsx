@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { getLinkDetails } from '../utils/linkParser';
 import VideoLinkCard from '../components/VideoLinkCard';
+import ProductCard from '../components/ProductCard';
 
 const themes = {
   default: {
@@ -39,6 +41,7 @@ const PublicProfilePage = () => {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
   const [links, setLinks] = useState([]);
+  const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -60,6 +63,7 @@ const PublicProfilePage = () => {
         const { data } = await axios.get(`http://localhost:5001/api/users/public-profile/${username}`);
         setProfile(data.profile);
         setLinks(data.links);
+        setProducts(data.products || []);
       } catch (err) {
         setError('Profile not found.');
         console.error(err);
@@ -69,6 +73,15 @@ const PublicProfilePage = () => {
     };
     fetchProfile();
   }, [username]);
+
+  const handleItemClick = async (item, type) => {
+    try {
+      // Use 'links' or 'products' to build the correct URL
+      axios.post(`http://localhost:5001/api/${type}/track/${item._id}`);
+    } catch (error) {
+      console.error(`Failed to track ${type} click:`, error);
+    }
+  };
 
   const videoLinks = links.filter(link => getLinkDetails(link.url).type === 'video');
   const imageLinks = links.filter(link => getLinkDetails(link.url).type === 'image');
@@ -111,7 +124,7 @@ const PublicProfilePage = () => {
                         <img src={link.url} alt={link.title} className="w-full h-full object-cover rounded-full" />
                       </div>
                     </div>
-                    <p className="text-xs mt-2 w-20 truncate opacity-80">{link.title}</p>
+                    <p className="text-sm font-bold mt-2 w-20 truncate opacity-80">{link.title}</p>
                   </a>
                 ))}
               </div>
@@ -150,17 +163,17 @@ const PublicProfilePage = () => {
           )}
           
           {/* Shop Section */}
-          {productLinks.length > 0 && (
+          {products.length > 0 && (
             <section>
-              <h2 className="text-xl font-bold mb-4 px-1">Shop</h2>
+              <h2 className="text-xl font-bold mb-4 px-1">Mini Shop Collection</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {productLinks.map(link => (
-                  <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`group block rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 ${activeTheme.card}`}>
-                    <div className="aspect-square bg-gray-200 flex items-center justify-center text-4xl opacity-50">🛍️</div>
-                    <div className="p-3">
-                      <p className="font-semibold truncate group-hover:text-blue-600">{link.title}</p>
-                    </div>
-                  </a>
+                {products.map(product => (
+                  <ProductCard
+                    key={product._id}
+                    product={product}
+                    onClick={() => handleItemClick(product, 'products')}
+                    theme={activeTheme}
+                  />
                 ))}
               </div>
             </section>
