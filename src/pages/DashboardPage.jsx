@@ -12,22 +12,31 @@ import ProfileEditor from '../components/ProfileEditor';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 import ThemeCustomizer from '../components/ThemeCustomizer';
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import ShopManager from '../components/ShopManager';
+import ProductEditorModal from '../components/ProductEditorModal';
 
 const DashboardPage = () => {
-  const [activeTab, setActiveTab] = useState('links');
   const { userInfo } = useContext(AuthContext);
 
+  // States
+  const [activeTab, setActiveTab] = useState('links');
   const [links, setLinks] = useState([]);
+  const [products, setProducts] = useState([]);
   const [userProfile, setUserProfile] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const isPro = userInfo?.isProUser || false;
+
+  // Link Modal States
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingLinkId, setDeletingLinkId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // --- NEW CENTRALIZED PRODUCT STATES ---
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);  
   const [currentTheme, setCurrentTheme] = useState('default');
 
   // --- FETCH DATA FROM BACKEND ---
@@ -42,15 +51,15 @@ const DashboardPage = () => {
       };
 
       try {
-        // Fetch links and profile in parallel
-        const [linksRes, profileRes] = await Promise.all([
+        // Fetch links, profile and products in parallel
+        const [linksRes, profileRes, productsRes] = await Promise.all([
           axios.get('http://localhost:5001/api/links', config),
-          axios.get('http://localhost:5001/api/users/profile', config)
+          axios.get('http://localhost:5001/api/users/profile', config),
+          axios.get('http://localhost:5001/api/products', config),
         ]);
-
         setLinks(linksRes.data);
         setUserProfile(profileRes.data);
-
+        setProducts(productsRes.data);
       } catch (err) {
         setError('Failed to fetch data. Please try again.');
         console.error(err);
@@ -59,9 +68,8 @@ const DashboardPage = () => {
       }
     };
 
-    if (userInfo) {
+    if (userInfo)
       fetchData();
-    }
   }, [userInfo]); // Re-fetch if userInfo changes
 
   // --- FULLY IMPLEMENTED CRUD HANDLERS ---
@@ -153,6 +161,67 @@ const DashboardPage = () => {
     }
   };
 
+  // --- FULLY IMPLEMENTED PRODUCT CRUD HANDLERS ---
+  const handleAddProductClick = () => {
+    setEditingProduct(null); // Ensure we are in "create" mode
+    setIsProductModalOpen(true);
+  };
+
+  const handleEditProductClick = (product) => {
+    setEditingProduct(product); // Set the product to edit
+    setIsProductModalOpen(true);
+  };
+  
+  const handleSaveProduct = async (productData) => {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    try {
+      if (editingProduct) {
+        // UPDATE Product
+        const { data: updatedProduct } = await axios.put(
+          `http://localhost:5001/api/products/${editingProduct._id}`,
+          productData,
+          config
+        );
+        setProducts(products.map(p => (p._id === updatedProduct._id ? updatedProduct : p)));
+      } else {
+        // CREATE Product
+        const { data: newProduct } = await axios.post(
+          'http://localhost:5001/api/products',
+          productData,
+          config
+        );
+        setProducts([...products, newProduct]);
+      }
+      setIsProductModalOpen(false);
+      setEditingProduct(null);
+      // Close the modal, which is handled in ShopManager, but we need to tell it to close
+      // For simplicity, we can let ShopManager handle its own modal state.
+      // The onSave prop will trigger the API call and update the global state here.
+    } catch (err) {
+      console.error('Failed to save product:', err);
+      alert('Error: Could not save product.');
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) 
+      return;
+    try {
+      const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+      await axios.delete(`http://localhost:5001/api/products/${productId}`, config);
+      setProducts(products.filter(p => p._id !== productId));
+    } catch (err) {
+      console.error('Failed to delete product:', err);
+      alert('Error: Could not delete product.');
+    }
+  };
+
   if (isLoading) {
     return <div className="pt-32 text-center">Loading your dashboard...</div>;
   }
@@ -172,6 +241,7 @@ const DashboardPage = () => {
               <div className="space-y-1">
                 {[
                   { id: 'links', label: '🔗 My Links' },
+                  { id: 'shop', label: '🛒 My Shop' },
                   { id: 'profile', label: '👤 Profile' },
                   { id: 'themes', label: '🎨 Themes' },
                   { id: 'analytics', label: '📊 Analytics' }
@@ -299,6 +369,26 @@ const DashboardPage = () => {
                 </GlassCard>
               )
             )}
+
+            {activeTab === 'shop' && (
+              isPro ? (
+                <ShopManager
+                  products={products}
+                  onAdd={handleAddProductClick}
+                  onEdit={handleEditProductClick}
+                  onDelete={handleDeleteProduct}
+                />
+              ) : (
+                <GlassCard className="p-6">
+                  <div className="text-center py-12">
+                    <div className="text-6xl mb-4">🛒</div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Pro Feature</h3>
+                    <p className="text-gray-600 mb-6">Upgrade to Pro to build your own shop.</p>
+                    <NeumorphicButton>🚀 Upgrade to Pro</NeumorphicButton>
+                  </div>
+                </GlassCard>
+              )
+            )}
           </div>
         </div>
       </div>
@@ -324,6 +414,13 @@ const DashboardPage = () => {
         }}
         onConfirm={confirmDeleteLink}
         isLoading={isDeleting}
+      />
+
+      <ProductEditorModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        product={editingProduct}
+        onSave={handleSaveProduct}
       />
     </div>
   );
