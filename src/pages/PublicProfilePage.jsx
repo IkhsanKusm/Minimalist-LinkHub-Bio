@@ -5,6 +5,7 @@ import axios from 'axios';
 import { getLinkDetails } from '../utils/linkParser';
 import VideoLinkCard from '../components/VideoLinkCard';
 import ProductCard from '../components/ProductCard';
+import ImageGallery from '../components/ImageGallery';
 
 const themes = {
   default: {
@@ -152,13 +153,10 @@ const PublicProfilePage = () => {
           {imageLinks.length > 0 && (
             <section>
               <h2 className="text-xl font-bold mb-4 px-1">Gallery</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {imageLinks.map(link => (
-                  <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link)} className="group block aspect-square bg-gray-100 rounded-2xl shadow-lg overflow-hidden">
-                    <img src={link.url} alt={link.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300" />
-                  </a>
-                ))}
-              </div>
+              <ImageGallery 
+                images={imageLinks} 
+                handleItemClick={handleItemClick}
+              />
             </section>
           )}
           
