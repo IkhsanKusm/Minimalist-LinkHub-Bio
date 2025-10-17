@@ -191,6 +191,26 @@ const PublicProfilePage = () => {
               </div>
             </section>
           )}
+
+          {/* Products Links Section */}
+          {productLinks.length > 0 && (
+            <section>
+              <h2 className="text-xl font-bold mb-4 px-1">Product Links</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {productLinks.map(link => (
+                  <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`block rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl overflow-hidden ${activeTheme.button}`}>
+                    <div className="p-4 flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-2xl">🛒</div>
+                      <div>
+                        <p className="font-semibold">{link.title}</p>
+                        <p className="text-sm opacity-70 truncate">{link.url}</p>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
         </main>
 
         {/* Footer */}
