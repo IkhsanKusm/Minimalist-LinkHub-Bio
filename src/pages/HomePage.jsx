@@ -87,7 +87,7 @@ const HomePage = () => {
                   ))}
                 </div>
                 <div className="text-center mt-4 text-white/60 text-xs">
-                  Powered by LinkHub
+                  Powered by Onesi
                 </div>
               </div>
             </GlassCard>
@@ -102,7 +102,7 @@ const HomePage = () => {
             Ready to Elevate Your Bio Link?
           </h2>
           <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-            Join thousands of creators who are already using LinkHub to grow their audience and business.
+            Join thousands of creators who are already using Onesi to grow their audience and business.
           </p>
           <Link to="/register">
             <NeumorphicButton variant="glass" className="text-lg px-8 py-4 bg-white/20 hover:bg-white/30">

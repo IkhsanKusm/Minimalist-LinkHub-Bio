@@ -89,7 +89,7 @@ const PlansPage = () => {
       pro: true
     },
     {
-      feature: 'No "Powered by LinkHub" branding',
+      feature: 'No "Powered by Onesi" branding',
       free: false,
       pro: true
     },

@@ -31,21 +31,21 @@ const ContactPage = () => {
       icon: '📧',
       title: 'Email',
       description: 'Send us an email anytime',
-      value: 'support@linkhub.com',
-      link: 'mailto:support@linkhub.com'
+      value: 'support@onesi.com',
+      link: 'mailto:support@onesi.com'
     },
     {
       icon: '🐙',
       title: 'GitHub',
       description: 'Check out our open source',
-      value: 'github.com/linkhub',
+      value: 'github.com/onesi',
       link: 'https://github.com'
     },
     {
       icon: '💬',
       title: 'Community',
       description: 'Join our Discord community',
-      value: 'discord.gg/linkhub',
+      value: 'discord.gg/onesi',
       link: 'https://discord.com'
     }
   ];
@@ -64,7 +64,7 @@ const ContactPage = () => {
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Have questions about LinkHub? We're here to help! Reach out to our team 
+              Have questions about Onesi? We're here to help! Reach out to our team 
               and we'll get back to you as soon as possible.
             </p>
           </div>

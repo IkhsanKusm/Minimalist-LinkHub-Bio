@@ -108,12 +108,10 @@ const RegisterPage = () => {
                 className="w-12 h-12"
               />
               <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                LinkHub
+                Onesi
               </span>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Join LinkHub
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Onesi</h1>
             <p className="text-gray-600">
               Create your beautiful bio link page in seconds
             </p>

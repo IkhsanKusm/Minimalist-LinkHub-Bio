@@ -185,7 +185,7 @@ const FeaturesPage = () => {
               Ready to Get Started?
             </h2>
             <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of creators who trust LinkHub for their bio link needs. 
+              Join thousands of creators who trust Onesi for their bio link needs. 
               Start free and upgrade when you're ready for advanced features.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

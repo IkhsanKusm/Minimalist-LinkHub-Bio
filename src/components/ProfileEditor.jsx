@@ -115,7 +115,7 @@ const ProfileEditor = ({ user, onSave }) => {
         <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
           <div className="text-sm text-blue-800 font-medium mb-1">Your Public URL</div>
           <div className="text-blue-600">
-            https://linkhub.com/{formData.username || 'username'}
+            https://onesi.com/{formData.username || 'username'}
           </div>
         </div>
       </div>

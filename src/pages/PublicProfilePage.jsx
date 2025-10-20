@@ -254,7 +254,7 @@ const PublicProfilePage = () => {
         {/* Footer */}
         <footer className="text-center mt-16 opacity-70 text-sm">
           <Link to="/" className={`font-bold ${activeTheme.accent}`}>
-            Powered by LinkHub
+            Powered by Onesi
           </Link>
         </footer>
       </div>
