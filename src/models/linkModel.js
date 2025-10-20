@@ -25,6 +25,12 @@ const linkSchema = new mongoose.Schema({
     enum: ['standard', 'video', 'image', 'product'],
     default: 'standard',
   },
+  collectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Collection',
+    default: null,
+    required: false, // Links can exist without a collection
+  },
   // Drag-and-drop reordering. Adding an order index.
   order: {
     type: Number,

@@ -46,6 +46,7 @@ const createLink = asyncHandler(async (req, res) => {
  * @access  Private
  */
 const updateLink = asyncHandler(async (req, res) => {
+    const { title, url, type, collectionId } = req.body;
     const link = await Link.findById(req.params.id);
 
     if (!link) {
@@ -53,18 +54,29 @@ const updateLink = asyncHandler(async (req, res) => {
         throw new Error('Link not found');
     }
 
-    // **SECURITY CHECK**: Make sure the link belongs to the logged-in user
+    if (link) {
     if (link.user.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error('User not authorized to update this link');
+      res.status(401);
+      throw new Error('User not authorized');
     }
 
-    link.title = req.body.title || link.title;
-    link.url = req.body.url || link.url;
-    link.type = req.body.type || link.type;
+    link.title = title || link.title;
+    link.url = url || link.url;
+    link.type = type || link.type;
+
+    // --- HANDLE COLLECTION ASSIGNMENT ---
+    // If collectionId is provided (even as an empty string for 'Uncategorized')
+    if (collectionId !== undefined) {
+      // An empty string or null means collection are un-categorizing the link
+      link.collectionId = collectionId === '' ? null : collectionId;
+    }
 
     const updatedLink = await link.save();
     res.json(updatedLink);
+  } else {
+    res.status(404);
+    throw new Error('Link not found');
+  }
 });
 
 /**
