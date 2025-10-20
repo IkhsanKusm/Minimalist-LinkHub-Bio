@@ -5,7 +5,7 @@ import NeumorphicButton from './NeumorphicButton';
 import { Link, Youtube, Image as ImageIcon, ShoppingCart, X } from 'lucide-react';
 import { getLinkDetails, isValidUrl } from '../utils/linkParser';
 
-const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
+const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collections = [] }) => {
   const [formData, setFormData] = useState({
     title: '',
     url: '',
@@ -16,10 +16,10 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
 
   useEffect(() => {
     if (link) {
-      setFormData({ title: link.title, url: link.url, type: link.type });
+      setFormData({ title: link.title, url: link.url, type: link.type, collectionId: link.collectionId || '' });
       setPreview(getLinkDetails(link.url));
     } else {
-      setFormData({ title: '', url: '', type: 'standard' });
+      setFormData({ title: '', url: '', type: 'standard', collectionId: '' });
       setPreview({ type: 'standard' });
     }
     setErrors({}); // Clear errors when modal opens/closes
@@ -143,6 +143,23 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false }) => {
             />
             {errors.url && <p className="text-xs text-red-600 mt-1">{errors.url}</p>}
           </div>
+
+          {/* --- NEW COLLECTION DROPDOWN --- */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Collection (Optional)</label>
+              <select
+                value={formData.collectionId || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, collectionId: e.target.value }))}
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="">Uncategorized</option>
+                {collections.map(collection => (
+                  <option key={collection._id} value={collection._id}>
+                    {collection.title}
+                  </option>
+                ))}
+              </select>
+            </div>
         </div>
 
         {/* Live Preview Section */}

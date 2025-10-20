@@ -1,6 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import { getLinkDetails } from '../utils/linkParser'; 
+export { SortableLinkItem } from './SortableLinkItem'; // Export for re-use
 import {
+  useDroppable,
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -17,6 +20,22 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+const Collection = ({ collection }) => {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `collection-${collection._id}`,
+    data: {
+      type: 'collection',
+      collection,
+    },
+  });
+
+  return (
+    <div ref={setNodeRef} className={`p-4 rounded-xl border-2 transition-all ${isOver ? 'bg-blue-100 border-blue-400' : 'bg-gray-50 border-gray-200'}`}>
+      <h3 className="font-semibold text-gray-800">📁 {collection.title}</h3>
+    </div>
+  );
+};
+
 const SortableLinkItem = ({ link, onEdit, onDelete, onHover, onLeave }) => {
   const {
     attributes,
@@ -25,7 +44,13 @@ const SortableLinkItem = ({ link, onEdit, onDelete, onHover, onLeave }) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: link._id });
+  } = useSortable({ 
+    id: link._id,
+    data: {
+      type: 'link',
+      link,
+    }
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -162,7 +187,7 @@ const LinkPreviewCard = ({ link, containerRef }) => {
   );
 };
 
-const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
+const DraggableLinkList = ({ links, collections = [], onReorder, onEdit, onDelete, onAssignToCollection }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -176,12 +201,21 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
+    if (!active || !over) return;
+
+    // Handle dropping a link into a collection
+    if (active.data.current?.type === 'link' && over.data.current?.type === 'collection') {
+      const linkId = active.id;
+      const collectionId = over.data.current.collection._id;
+      onAssignToCollection(linkId, collectionId);
+      return;
+    }
+
+    // Handle reordering links
+    if (active.data.current?.type === 'link' && over.data.current?.type === 'link' && active.id !== over.id) {
       const oldIndex = links.findIndex((link) => link._id === active.id);
       const newIndex = links.findIndex((link) => link._id === over.id);
-
-      const reorderedLinks = arrayMove(links, oldIndex, newIndex);
-      onReorder(reorderedLinks);
+      onReorder(arrayMove(links, oldIndex, newIndex));
     }
   };
 
@@ -196,6 +230,18 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
       onDragEnd={handleDragEnd}
     >
       <div className="relative" ref={containerRef}>
+        {collections.length > 0 && (
+          <div className="mb-8 p-4 bg-gray-50/50 rounded-xl border border-gray-200/50">
+            <h3 className="font-semibold text-gray-700 mb-3">My Collections</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <UncategorizedDropZone onAssignToCollection={onAssignToCollection} />
+              {collections.map(collection => (
+                <Collection key={collection._id} collection={collection} />
+              ))}
+            </div>
+          </div>
+        )}
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Uncategorized Links</h3>
         <SortableContext items={links.map(link => link._id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-3">
             {links.map((link) => (
@@ -215,5 +261,22 @@ const DraggableLinkList = ({ links, onReorder, onEdit, onDelete }) => {
     </DndContext>
   );
 };
+
+const UncategorizedDropZone = ({ onAssignToCollection }) => {
+  const { isOver, setNodeRef } = useDroppable({
+    id: 'collection-uncategorized',
+    data: {
+      type: 'collection',
+      collection: { _id: null }, // Use null to signify uncategorized
+    },
+  });
+
+  return (
+    <div ref={setNodeRef} className={`p-4 rounded-xl border-2 transition-all ${isOver ? 'bg-green-100 border-green-400' : 'bg-white border-gray-200'}`}>
+      <h3 className="font-semibold text-gray-800">📥 Uncategorized</h3>
+    </div>
+  );
+};
+
 
 export default DraggableLinkList;
