@@ -43,6 +43,8 @@ const PublicProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [links, setLinks] = useState([]);
   const [products, setProducts] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [activeCollectionId, setActiveCollectionId] = useState(null); // null for 'All' (uncategorized)
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -65,6 +67,7 @@ const PublicProfilePage = () => {
         setProfile(data.profile);
         setLinks(data.links);
         setProducts(data.products || []);
+        setCollections(data.collections || []);
       } catch (err) {
         setError('Profile not found.');
         console.error(err);
@@ -84,11 +87,19 @@ const PublicProfilePage = () => {
     }
   };
 
-  const videoLinks = links.filter(link => getLinkDetails(link.url).type === 'video');
-  const imageLinks = links.filter(link => getLinkDetails(link.url).type === 'image');
-  const productLinks = links.filter(link => link.type === 'product');
-  const standardLinks = links.filter(link => !['video', 'image', 'product'].includes(getLinkDetails(link.url).type) && link.type !== 'product');
-  const storyLinks = imageLinks.slice(0, 8);
+  // Filter links based on the active collection
+  const displayedLinks = activeCollectionId
+    ? links.filter(link => link.collectionId === activeCollectionId)
+    : links.filter(link => !link.collectionId); // Show uncategorized links in 'All'
+
+  const videoLinks = displayedLinks.filter(link => getLinkDetails(link.url).type === 'video');
+  const imageLinks = displayedLinks.filter(link => getLinkDetails(link.url).type === 'image');
+  const productLinks = displayedLinks.filter(link => link.type === 'product');
+  const standardLinks = displayedLinks.filter(link => !['video', 'image', 'product'].includes(getLinkDetails(link.url).type) && link.type !== 'product');
+  
+  // Stories and Products are only shown on the main "All" tab for now
+  const storyLinks = activeCollectionId ? [] : links.filter(link => getLinkDetails(link.url).type === 'image').slice(0, 8);
+  const displayedProducts = activeCollectionId ? [] : products;
 
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-100">Loading...</div>;
@@ -132,6 +143,35 @@ const PublicProfilePage = () => {
             </section>
           )}
 
+          {/* Collections Tab Section */}
+          {collections.length > 0 && (
+            <section className="my-6">
+              <div className="flex space-x-2 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+                <button
+                  onClick={() => setActiveCollectionId(null)}
+                  className={`flex-shrink-0 px-5 py-2.5 text-sm font-bold rounded-full transition-all duration-300 ${
+                    activeCollectionId === null 
+                      ? `${activeTheme.button} scale-105 shadow-xl` 
+                      : 'bg-white/50 backdrop-blur-sm hover:bg-white/80 text-gray-600'
+                  }`}
+                >
+                  All
+                </button>
+                {collections.map(collection => (
+                  <button
+                    key={collection._id}
+                    onClick={() => setActiveCollectionId(collection._id)}
+                    className={`flex-shrink-0 px-5 py-2.5 text-sm font-bold rounded-full transition-all duration-300 ${
+                      activeCollectionId === collection._id 
+                        ? `${activeTheme.button} scale-105 shadow-xl` 
+                        : 'bg-white/50 backdrop-blur-sm hover:bg-white/80 text-gray-600'
+                    }`}
+                  >{collection.title}</button>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Featured Videos Section */}
           {videoLinks.length > 0 && (
             <section>
@@ -161,11 +201,11 @@ const PublicProfilePage = () => {
           )}
           
           {/* Shop Section */}
-          {products.length > 0 && (
+          {displayedProducts.length > 0 && (
             <section>
               <h2 className="text-xl font-bold mb-4 px-1">Mini Shop Collection</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {products.map(product => (
+                {displayedProducts.map(product => (
                   <ProductCard
                     key={product._id}
                     product={product}
