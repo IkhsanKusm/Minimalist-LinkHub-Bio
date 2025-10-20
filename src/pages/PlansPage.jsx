@@ -31,7 +31,7 @@ const PlansPage = () => {
     {
       name: 'Pro',
       description: 'For professionals and businesses',
-      price: '$9',
+      price: 'Rp75.000,00',
       period: 'per month',
       popular: true,
       features: [

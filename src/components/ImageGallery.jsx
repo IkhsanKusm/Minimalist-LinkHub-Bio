@@ -28,7 +28,6 @@ const ImageGallery = ({ images, handleItemClick }) => {
       link.href = blobUrl;
       
       // Set the 'download' attribute. This tells the browser to download the file
-      // instead of navigating to it. We'll name it based on the link title.
       link.setAttribute('download', `${imageName}.jpg`);
       
       // Programmatically click the link to trigger the download.
@@ -62,8 +61,8 @@ const ImageGallery = ({ images, handleItemClick }) => {
           spaceBetween: 20,
         },
         1024: {
-          slidesPerView: 3.5,
-          spaceBetween: 30,
+          slidesPerView: 3,
+          spaceBetween: 25,
         },
       }}
       className="!pb-10" // Add padding-bottom for pagination dots
