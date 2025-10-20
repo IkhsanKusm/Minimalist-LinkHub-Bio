@@ -5,7 +5,7 @@ const ThemeCustomizer = ({ currentTheme, onThemeChange, isPro }) => {
     {
       id: 'default',
       name: 'Ocean Blue',
-      gradient: 'from-blue-500 to-purple-600',
+      gradient: 'from-blue-600 to-purple-700',
       preview: 'bg-gradient-to-br from-blue-500 to-purple-600'
     },
     {

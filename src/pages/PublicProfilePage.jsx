@@ -9,11 +9,11 @@ import ImageGallery from '../components/ImageGallery';
 
 const themes = {
   default: {
-    bg: 'bg-gradient-to-br from-gray-50 to-blue-100',
-    text: 'text-gray-800',
-    name: 'text-gray-900',
+    bg: 'bg-gradient-to-br from-blue-100 to-purple-200',
+    text: 'text-blue-900',
+    name: 'text-purple-900',
     accent: 'text-blue-600',
-    button: 'bg-white/80 backdrop-blur-md hover:bg-white text-gray-800 shadow-md',
+    button: 'bg-white/80 backdrop-blur-md hover:bg-white text-blue-800 shadow-md',
   },
   sunset: {
     bg: 'bg-gradient-to-br from-orange-100 via-red-100 to-pink-200',
