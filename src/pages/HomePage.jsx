@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedBackground from '../components/AnimatedBackground';
 import GlassCard from '../components/GlassCard';
@@ -12,6 +12,34 @@ const HomePage = () => {
     { number: '1M+', label: 'Total Clicks' },
     { number: '99.9%', label: 'Uptime' }
   ];
+
+  const mockupThemes = [
+    {
+      id: 'default',
+      name: 'Ocean Blue',
+      bg: 'bg-gradient-to-br from-blue-500 to-purple-600',
+      button: 'bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/30',
+    },
+    {
+      id: 'sunset',
+      name: 'Sunset',
+      bg: 'bg-gradient-to-br from-orange-400 via-red-500 to-pink-500',
+      button: 'bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/30',
+    },
+    {
+      id: 'forest',
+      name: 'Forest',
+      bg: 'bg-gradient-to-br from-green-500 to-teal-600',
+      button: 'bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/30',
+    },
+    {
+      id: 'midnight',
+      name: 'Midnight',
+      bg: 'bg-gradient-to-br from-gray-800 to-black',
+      button: 'bg-gray-700/50 backdrop-blur-md border-gray-600 hover:bg-gray-600/50',
+    },
+  ];
+  const [activeTheme, setActiveTheme] = useState(mockupThemes[0]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
@@ -67,8 +95,8 @@ const HomePage = () => {
 
           {/* Phone Mockup Preview */}
           <div className="max-w-md mx-auto">
-            <GlassCard hover={true} className="p-8 transform hover:scale-105 transition-transform duration-300">
-              <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-2xl">
+            <GlassCard hover={true} className="p-4 sm:p-8 transform hover:scale-105 transition-transform duration-300">
+              <div className={`rounded-3xl p-6 text-white shadow-2xl transition-colors duration-500 ${activeTheme.bg}`}>
                 <div className="text-center mb-6">
                   <div className="w-20 h-20 bg-white/20 rounded-full mx-auto mb-4 border-2 border-white/30 flex items-center justify-center">
                     <span className="text-2xl">👤</span>
@@ -80,7 +108,7 @@ const HomePage = () => {
                   {['📸 Instagram', '🎵 TikTok', '🛒 My Shop', '📧 Contact', '🎥 YouTube'].map((link, index) => (
                     <div 
                       key={index}
-                      className="bg-white/20 backdrop-blur-sm rounded-xl py-3 px-4 text-center transition-all hover:bg-white/30 hover:scale-105 cursor-pointer border border-white/30"
+                      className={`rounded-xl py-3 px-4 text-center transition-all hover:scale-105 cursor-pointer ${activeTheme.button}`}
                     >
                       {link}
                     </div>
@@ -88,6 +116,15 @@ const HomePage = () => {
                 </div>
                 <div className="text-center mt-4 text-white/60 text-xs">
                   Powered by Onesi
+                </div>
+              </div>
+              {/* Interactive Theme Controls */}
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600 mb-3">Try our themes!</p>
+                <div className="flex justify-center space-x-2">
+                  {mockupThemes.map(theme => (
+                    <button key={theme.id} onClick={() => setActiveTheme(theme)} className={`w-6 h-6 rounded-full transition-all duration-300 ${theme.bg} ${activeTheme.id === theme.id ? 'ring-2 ring-offset-2 ring-blue-500' : 'hover:scale-110'}`} aria-label={`Switch to ${theme.name} theme`}></button>
+                  ))}
                 </div>
               </div>
             </GlassCard>

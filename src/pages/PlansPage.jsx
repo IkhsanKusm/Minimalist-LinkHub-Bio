@@ -8,21 +8,21 @@ const PlansPage = () => {
   const plans = [
     {
       name: 'Free',
-      description: 'Perfect for creators getting started',
-      price: '$0',
+      description: 'Perfect for creators and individuals getting started with their online presence.',
+      price: 'Rp0',
       period: 'forever',
       popular: false,
       features: [
         { name: 'Unlimited Links', included: true },
-        { name: 'Basic Link Management', included: true },
+        { name: 'Drag & Drop Link Management', included: true },
         { name: 'Pre-defined Themes', included: true },
         { name: 'Profile Customization', included: true },
         { name: 'Public Profile Page', included: true },
-        { name: 'Basic Support', included: true },
-        { name: 'Mini-Shop Feature', included: false },
-        { name: 'Click Analytics', included: false },
-        { name: 'Advanced Themes', included: false },
-        { name: 'No Branding', included: false },
+        { name: 'Community Support', included: true },
+        { name: 'Integrated E-commerce', included: false },
+        { name: 'Audience Analytics', included: false },
+        { name: 'Premium Themes', included: false },
+        { name: 'Remove Onesi Branding', included: false },
         { name: 'Priority Support', included: false }
       ],
       cta: 'Get Started Free',
@@ -30,21 +30,21 @@ const PlansPage = () => {
     },
     {
       name: 'Pro',
-      description: 'For professionals and businesses',
+      description: 'The ultimate toolkit for professionals, marketers, and businesses to drive growth.',
       price: 'Rp75.000,00',
       period: 'per month',
       popular: true,
       features: [
         { name: 'Unlimited Links', included: true },
-        { name: 'Basic Link Management', included: true },
+        { name: 'Drag & Drop Link Management', included: true },
         { name: 'Pre-defined Themes', included: true },
         { name: 'Profile Customization', included: true },
         { name: 'Public Profile Page', included: true },
-        { name: 'Basic Support', included: true },
-        { name: 'Mini-Shop Feature', included: true },
-        { name: 'Click Analytics', included: true },
-        { name: 'Advanced Themes', included: true },
-        { name: 'No Branding', included: true },
+        { name: 'Community Support', included: true },
+        { name: 'Integrated E-commerce', included: true },
+        { name: 'Audience Analytics', included: true },
+        { name: 'Premium Themes', included: true },
+        { name: 'Remove Onesi Branding', included: true },
         { name: 'Priority Support', included: true }
       ],
       cta: 'Go Pro',
@@ -54,7 +54,7 @@ const PlansPage = () => {
 
   const comparison = [
     {
-      feature: 'User Authentication & Dashboard',
+      feature: 'Secure Account & Dashboard',
       free: true,
       pro: true
     },
@@ -64,37 +64,37 @@ const PlansPage = () => {
       pro: true
     },
     {
-      feature: 'Basic Link Management (CRUD)',
+      feature: 'Drag & Drop Link Management',
       free: true,
       pro: true
     },
     {
-      feature: 'Basic Customization (pre-defined themes)',
+      feature: 'Basic Themes',
       free: true,
       pro: true
     },
     {
-      feature: 'Mini-Shop Functionality',
+      feature: 'Integrated E-commerce (Mini-Shop)',
       free: false,
       pro: true
     },
     {
-      feature: 'Basic Analytics (click counts)',
+      feature: 'Audience & Performance Analytics',
       free: false,
       pro: true
     },
     {
-      feature: 'Advanced Customization',
+      feature: 'Access to Premium Themes',
       free: false,
       pro: true
     },
     {
-      feature: 'No "Powered by Onesi" branding',
+      feature: 'Remove \'Powered by Onesi\' Branding',
       free: false,
       pro: true
     },
     {
-      feature: 'Priority Support',
+      feature: 'Priority Customer Support',
       free: false,
       pro: true
     }
@@ -109,8 +109,8 @@ const PlansPage = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Simple Pricing
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
+                Find the Plan That's Right for You
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -178,7 +178,7 @@ const PlansPage = () => {
           {/* Feature Comparison Table */}
           <GlassCard className="p-8 mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-              Plan Comparison
+              Feature Comparison
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -217,20 +217,18 @@ const PlansPage = () => {
           {/* Business Model Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
             <GlassCard className="p-6">
-              <div className="text-3xl mb-4">🎯</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Free Plan Strategy</h3>
+              <div className="text-3xl mb-4">🎁</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Generous Free Plan</h3>
               <p className="text-gray-600">
-                Get users and validate core features with zero cost. Perfect for creators 
-                who need a simple, clean bio link solution.
+                Our Free plan includes all the essential tools you need to create a beautiful and functional link page. We believe everyone should have access to a great online presence.
               </p>
             </GlassCard>
 
             <GlassCard className="p-6">
               <div className="text-3xl mb-4">💎</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Pro Plan Value</h3>
-              <p className="text-gray-600">
-                Advanced tools for professionals. Monetize your audience with mini-shop 
-                and track performance with analytics.
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Why Go Pro?</h3>
+              <p className="text-gray-600 leading-relaxed">
+                For a small monthly fee, the Pro plan unlocks powerful features like e-commerce and analytics to help you monetize your audience and make data-driven decisions.
               </p>
             </GlassCard>
           </div>
