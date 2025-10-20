@@ -25,7 +25,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // The external link where the user can buy the product (e.g., Gumroad, Etsy)
+  // The external link where the user can buy the product
   productUrl: {
     type: String,
     required: true,
