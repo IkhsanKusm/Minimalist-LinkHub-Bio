@@ -6,6 +6,7 @@ const userRoutes = require('./routes/userRoutes');
 const linkRoutes = require('./routes/linkRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const productRoutes = require('./routes/productRoutes');
+const collectionRoutes = require('./routes/collectionRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // Load environment variables from .env file
@@ -31,6 +32,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/links', linkRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/collections', collectionRoutes);
 
 // Use the error handling middleware
 app.use(notFound);

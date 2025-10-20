@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const Link = require('../models/linkModel');
 const Product = require('../models/productModel');
+const Collection = require('../models/collectionModel');
 const generateToken = require('../utils/generateToken');
 
 /**
@@ -16,7 +17,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // 2. Check if the user already exists by email
   const userExists = await User.findOne({ email });
   if (userExists) {
-    res.status(400); // Bad Request
+    res.status(400);
     throw new Error('User already exists');
   }
 
@@ -30,7 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // 4. If user was created successfully, send back user data and a token
   if (user) {
-    res.status(201).json({ // 201 Created
+    res.status(201).json({
       _id: user._id,
       username: user.username,
       email: user.email,
@@ -128,23 +129,30 @@ const getPublicProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 
-  // Fetch both links and products in parallel for better performance
-  const [links, products] = await Promise.all([
-    Link.find({ user: user._id }).sort({ order: 1 }),
-    Product.find({ user: user._id }).sort({ order: 1 })
-  ]);
+  if (user) {
+    // Fetch links, products, and collections in parallel
+    const [links, products, collections] = await Promise.all([
+      Link.find({ user: user._id }).sort({ order: 1 }),
+      Product.find({ user: user._id }),
+      Collection.find({ user: user._id }), // <-- Fetch collections
+    ]);
 
-  res.json({
-    profile: {
-      _id: user._id,
-      username: user.username,
-      bio: user.bio,
-      profilePhotoUrl: user.profilePhotoUrl,
-      theme: user.theme,
-    },
-    links: links,
-    products: products,
-  });
+    res.json({
+      profile: {
+        _id: user._id,
+        username: user.username,
+        bio: user.bio,
+        theme: user.theme,
+        profilePhotoUrl: user.profilePhotoUrl,
+      },
+      links,
+      products,
+      collections, // <-- Add collections to the response
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
 });
 
 module.exports = { registerUser, authUser, getUserProfile, updateUserProfile, getPublicProfile };
