@@ -1,22 +1,27 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
 import GlassCard from '../components/GlassCard';
 import NeumorphicButton from '../components/NeumorphicButton';
+import ThemeCustomizer from '../components/ThemeCustomizer';
+
 import DraggableLinkList from '../components/DraggableLinkList';
 import LinkEditorModal from '../components/LinkEditorModal';
 import ProfileEditor from '../components/ProfileEditor';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
-import ThemeCustomizer from '../components/ThemeCustomizer';
+
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
 import ShopManager from '../components/ShopManager';
 import ProductEditorModal from '../components/ProductEditorModal';
+import CollectionManager from '../components/CollectionManager';
+import CollectionLinks from '../components/CollectionLinks';
 
 const DashboardPage = () => {
   const { userInfo } = useContext(AuthContext);
+  const isPro = userInfo?.isProUser || false;
 
   // States
   const [activeTab, setActiveTab] = useState('links');
@@ -25,7 +30,7 @@ const DashboardPage = () => {
   const [userProfile, setUserProfile] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const isPro = userInfo?.isProUser || false;
+  const [collections, setCollections] = useState([]);
 
   // Link Modal States
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -33,6 +38,11 @@ const DashboardPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingLinkId, setDeletingLinkId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Collection Delete Modal States
+  const [isDeleteCollectionModalOpen, setIsDeleteCollectionModalOpen] = useState(false);
+  const [deletingCollectionId, setDeletingCollectionId] = useState(null);
+  const [isDeletingCollection, setIsDeletingCollection] = useState(false);
 
   // --- NEW CENTRALIZED PRODUCT STATES ---
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -52,14 +62,16 @@ const DashboardPage = () => {
 
       try {
         // Fetch links, profile and products in parallel
-        const [linksRes, profileRes, productsRes] = await Promise.all([
+        const [linksRes, profileRes, productsRes, collectionsRes] = await Promise.all([
           axios.get('http://localhost:5001/api/links', config),
           axios.get('http://localhost:5001/api/users/profile', config),
           axios.get('http://localhost:5001/api/products', config),
+          axios.get('http://localhost:5001/api/collections', config),
         ]);
         setLinks(linksRes.data);
         setUserProfile(profileRes.data);
         setProducts(productsRes.data);
+        setCollections(collectionsRes.data);
       } catch (err) {
         setError('Failed to fetch data. Please try again.');
         console.error(err);
@@ -73,7 +85,6 @@ const DashboardPage = () => {
   }, [userInfo]); // Re-fetch if userInfo changes
 
   // --- FULLY IMPLEMENTED CRUD HANDLERS ---
-
   const handleSaveLink = async (linkData) => {
     const config = {
       headers: {
@@ -134,8 +145,36 @@ const DashboardPage = () => {
     }
   };
 
-  const handleReorderLinks = (reorderedLinks) => {
-    setLinks(reorderedLinks);
+  const openDeleteCollectionConfirmation = (collectionId) => {
+    setDeletingCollectionId(collectionId);
+    setIsDeleteCollectionModalOpen(true);
+  };
+
+  const confirmDeleteCollection = async () => {
+    if (!deletingCollectionId) return;
+
+    setIsDeletingCollection(true);
+    try {
+      const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+      await axios.delete(`http://localhost:5001/api/collections/${deletingCollectionId}`, config);
+      
+      // Optimistically update state
+      setCollections(collections.filter(col => col._id !== deletingCollectionId));
+      // Uncategorize links that belonged to the deleted collection
+      setLinks(links.map(link => 
+        link.collectionId === deletingCollectionId 
+          ? { ...link, collectionId: null } 
+          : link
+      ));
+
+      setIsDeleteCollectionModalOpen(false);
+      setDeletingCollectionId(null);
+    } catch (err) {
+      console.error('Failed to delete collection:', err);
+      alert('Error: Could not delete collection.');
+    } finally {
+      setIsDeletingCollection(false);
+    }
   };
 
   const handleThemeChange = async (themeId) => {
@@ -200,8 +239,8 @@ const DashboardPage = () => {
       }
       setIsProductModalOpen(false);
       setEditingProduct(null);
-      // Close the modal, which is handled in ShopManager, but we need to tell it to close
-      // For simplicity, we can let ShopManager handle its own modal state.
+      // Close the modal, which is handled in ShopManager, but user need to tell it to close
+      // For simplicity, user can let ShopManager handle its own modal state.
       // The onSave prop will trigger the API call and update the global state here.
     } catch (err) {
       console.error('Failed to save product:', err);
@@ -219,6 +258,78 @@ const DashboardPage = () => {
     } catch (err) {
       console.error('Failed to delete product:', err);
       alert('Error: Could not delete product.');
+    }
+  };
+
+  const handleAssignLinkToCollection = async (linkId, collectionId) => {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    try {
+      const { data: updatedLink } = await axios.put(
+        `http://localhost:5001/api/links/${linkId}`,
+        { collectionId: collectionId },
+        config
+      );
+      setLinks(links.map(link => (link._id === updatedLink._id ? updatedLink : link)));
+    } catch (err) {
+      console.error('Failed to assign link to collection:', err);
+      alert('Error: Could not assign link.');
+    }
+  };
+
+  const handleReorderCollections = async (reorderedCollections) => {
+    // Optimistic UI update
+    setCollections(reorderedCollections);
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    try {
+      const orderedIds = reorderedCollections.map(c => c._id);
+      await axios.put('http://localhost:5001/api/collections/reorder', { orderedIds }, config);
+    } catch (err) {
+      console.error('Failed to reorder collections:', err);
+      // NOTE: Here user might want to revert the state to its previous value
+    }
+  };
+
+  const { categorizedLinks, uncategorizedLinks } = useMemo(() => {
+    const categorized = {};
+    const uncategorized = [];
+
+    collections.forEach(collection => {
+      categorized[collection._id] = [];
+    });
+
+    links.forEach(link => {
+      if (link.collectionId && categorized[link.collectionId]) {
+        categorized[link.collectionId].push(link);
+      } else {
+        uncategorized.push(link);
+      }
+    });
+
+    return { categorizedLinks: categorized, uncategorizedLinks: uncategorized };
+  }, [links]);
+
+  const handleReorderLinks = (collectionId, reorderedLinksInCollection) => {
+    // This is a complex operation if user want to persist order to the backend.
+    // For now, user will just update the local state for a good UX.
+    // A proper implementation would involve an API call to save the new order.
+    const otherLinks = links.filter(link => link.collectionId !== collectionId);
+    if (collectionId === 'uncategorized') {
+      const otherCategorizedLinks = links.filter(link => !!link.collectionId);
+      setLinks([...reorderedLinksInCollection, ...otherCategorizedLinks]);
+    } else {
+      const uncategorized = links.filter(link => !link.collectionId);
+      setLinks([...otherLinks.filter(l => l.collectionId !== collectionId), ...reorderedLinksInCollection, ...uncategorized]);
     }
   };
 
@@ -283,6 +394,46 @@ const DashboardPage = () => {
           {/* Main Content */}
           <div className="lg:col-span-3">
             {activeTab === 'links' && (
+              <div className="space-y-8">
+              <CollectionManager 
+                collections={collections} 
+                onCreate={async (title) => {
+                  const config = {
+                    headers: {
+                      'Content-Type': 'application/json', // The property 'title' does not exist on type '{ name: any; }
+                      Authorization: `Bearer ${userInfo.token}`,
+                    },
+                  };
+                  try {
+                    const { data: newCollection } = await axios.post(
+                      'http://localhost:5001/api/collections',
+                      { title },
+                      config,
+                    );
+                    setCollections([...collections, newCollection]);
+                  } catch (err) {
+                    console.error('Failed to create collection:', err);
+                    alert('Error: Could not create collection.');
+                  }
+                }}
+                onDelete={openDeleteCollectionConfirmation}
+                onReorder={handleReorderCollections}
+              />
+              {/* Display links within each collection */}
+              {collections.map(collection => (
+                categorizedLinks[collection._id]?.length > 0 && (
+                  <CollectionLinks
+                    key={collection._id}
+                    collection={collection}
+                    links={categorizedLinks[collection._id]}
+                    onReorder={(collectionId, reordered) => setLinks([...links.filter(l => l.collectionId !== collectionId), ...reordered])}
+                    onEdit={(link) => { setEditingLink(link); setIsLinkModalOpen(true); }}
+                    onDelete={openDeleteConfirmation}
+                    onAssignToCollection={handleAssignLinkToCollection}
+                  />
+                )
+              ))}
+
               <GlassCard className="p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
@@ -307,17 +458,19 @@ const DashboardPage = () => {
                 ) : (
                   <>
                 <DraggableLinkList
-                  links={links}
-                  onReorder={handleReorderLinks}
+                  links={uncategorizedLinks}
+                  collections={collections}
+                  onReorder={(reordered) => handleReorderLinks('uncategorized', reordered)}
                   onEdit={(link) => {
                     setEditingLink(link);
                     setIsLinkModalOpen(true);
                   }}
                   onDelete={openDeleteConfirmation}
+                  onAssignToCollection={handleAssignLinkToCollection}
                 />
 
                 {links.length === 0 && (
-                  <div className="text-center py-12">
+                  <div className="text-center py-12 border-t border-gray-200 mt-6">
                     <div className="text-6xl mb-4">🔗</div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">No links yet</h3>
                     <p className="text-gray-600 mb-6">Add your first link to get started!</p>
@@ -331,6 +484,7 @@ const DashboardPage = () => {
                 </>
                 )}
               </GlassCard>
+              </div>
             )}
 
             {activeTab === 'profile' && (
@@ -402,6 +556,7 @@ const DashboardPage = () => {
         }}
         link={editingLink}
         onSave={handleSaveLink}
+        collections={collections}
         isPro={isPro}
       />
 
@@ -414,6 +569,19 @@ const DashboardPage = () => {
         }}
         onConfirm={confirmDeleteLink}
         isLoading={isDeleting}
+      />
+
+      {/* Collection Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteCollectionModalOpen}
+        onClose={() => {
+          setIsDeleteCollectionModalOpen(false);
+          setDeletingCollectionId(null);
+        }}
+        onConfirm={confirmDeleteCollection}
+        isLoading={isDeletingCollection}
+        title="Delete Collection?"
+        message="Are you sure you want to delete this collection? All links within it will become uncategorized. This action cannot be undone."
       />
 
       <ProductEditorModal
