@@ -57,17 +57,27 @@ const ProfileEditor = ({ user, onSave }) => {
 
       <div className="space-y-6">
         {/* Avatar Upload */}
-        <div className="flex items-center space-x-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-            {formData.username?.[0]?.toUpperCase() || 'U'}
-          </div>
-          <div>
-            <div className="text-sm text-gray-600 mb-2">Profile Picture</div>
-            {isEditing && (
-              <NeumorphicButton variant="secondary" className="text-sm">
-                📁 Upload Image
-              </NeumorphicButton>
+        <div className="flex items-start space-x-6">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden bg-gray-200 shadow-inner">
+            {formData.profilePhotoUrl ? (
+              <img src={formData.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+                {formData.username?.[0]?.toUpperCase() || 'U'}
+              </div>
             )}
+          </div>
+          <div className="flex-grow">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture URL</label>
+            {isEditing ? (
+              <input
+                type="url"
+                value={formData.profilePhotoUrl}
+                onChange={(e) => setFormData(prev => ({ ...prev, profilePhotoUrl: e.target.value }))}
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500"
+                placeholder="https://..."
+              />
+            ) : <p className="text-sm text-gray-500 truncate">{formData.profilePhotoUrl || 'No image URL set.'}</p>}
           </div>
         </div>
 

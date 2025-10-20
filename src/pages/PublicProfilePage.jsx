@@ -117,8 +117,14 @@ const PublicProfilePage = () => {
 
         {/* Profile Header */}
         <header className="relative text-center mb-10">
-          <div className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto border-4 border-white shadow-lg flex items-center justify-center">
-             <span className="text-4xl md:text-5xl text-white font-bold">{profile.username?.[0]?.toUpperCase()}</span>
+          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto border-4 border-white shadow-lg flex items-center justify-center overflow-hidden bg-gray-200">
+             {profile.profilePhotoUrl ? (
+                <img src={profile.profilePhotoUrl} alt={profile.username} className="w-full h-full object-cover" />
+             ) : (
+                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                  <span className="text-4xl md:text-5xl text-white font-bold">{profile.username?.[0]?.toUpperCase()}</span>
+                </div>
+             )}
           </div>
           <h1 className={`text-2xl md:text-3xl font-bold mt-3 ${activeTheme.name}`}>@{profile.username}</h1>
           <p className="text-base mt-2 max-w-md mx-auto opacity-80">{profile.bio}</p>
