@@ -70,51 +70,61 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-/**
-  * @desc    Get user profile
-  * @route   GET /api/users/profile
-  * @access  Private
-  */
-const getUserProfile = asyncHandler(async (req, res) => {
-  // req.user is available from 'protect' middleware
-  const user = {
-    _id: req.user._id,
-    username: req.user.username,
-    email: req.user.email,
-    bio: req.user.bio,
-    profilePhotoUrl: req.user.profilePhotoUrl,
-  };
-  res.json(user);
-});
-
-/**
-  * @desc    Update user profile
-  * @route   PUT /api/users/profile
-  * @access  Private
-  */
-const updateUserProfile = asyncHandler(async (req, res) => {
+// @desc    Get user profile
+// @route   GET /api/users/profile
+// @access  Private
+const getUserProfile = async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
-    user.bio = req.body.bio || user.bio;
-    user.profilePhotoUrl = req.body.profilePhotoUrl || user.profilePhotoUrl;
-    user.username = req.body.username || user.username;
-    user.theme = req.body.theme || user.theme;
-
-    const updatedUser = await user.save();
     res.json({
-      _id: updatedUser._id,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      bio: updatedUser.bio,
-      profilePhotoUrl: updatedUser.profilePhotoUrl,
-      theme: updatedUser.theme,
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      bio: user.bio,
+      theme: user.theme,
+      isProUser: user.isProUser,
+      profilePhotoUrl: user.profilePhotoUrl, // Make sure to send this field
     });
   } else {
     res.status(404);
     throw new Error('User not found');
   }
-});
+};
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUserProfile = async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.username = req.body.username || user.username;
+    user.bio = req.body.bio || user.bio;
+    user.theme = req.body.theme || user.theme;
+    
+    // Handle the new profilePhotoUrl field
+    // If it's sent in the body, update it. If an empty string is sent, it will be saved.
+    if (req.body.profilePhotoUrl !== undefined) {
+      user.profilePhotoUrl = req.body.profilePhotoUrl;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      bio: updatedUser.bio,
+      theme: updatedUser.theme,
+      isProUser: updatedUser.isProUser,
+      profilePhotoUrl: updatedUser.profilePhotoUrl, // Return the updated URL
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+};
 
 /**
  * @desc    Get a user's public profile and links
