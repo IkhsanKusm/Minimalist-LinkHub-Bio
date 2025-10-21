@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
+import DeleteConfirmationModal from './DeleteConfirmationModal'; // Import the modal
 import { Edit, Trash2, Search, PackageX } from 'lucide-react';
 
 const ProductCard = ({ product, onEdit, onDelete }) => {
@@ -38,7 +39,31 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
 
 const ShopManager = ({ products, onAdd, onEdit, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  // State for delete confirmation modal
+  const [isDeleteProductModalOpen, setIsDeleteProductModalOpen] = useState(false);
+  const [deletingProductId, setDeletingProductId] = useState(null);
+  const [isDeletingProduct, setIsDeletingProduct] = useState(false);
 
+  const openDeleteProductConfirmation = (productId) => {
+    setDeletingProductId(productId);
+    setIsDeleteProductModalOpen(true);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (!deletingProductId) return;
+
+    setIsDeletingProduct(true);
+    try {
+      await onDelete(deletingProductId); // Call the onDelete prop from DashboardPage
+      setIsDeleteProductModalOpen(false);
+      setDeletingProductId(null);
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      alert('Error: Could not delete product.'); // Display error if deletion fails
+    } finally {
+      setIsDeletingProduct(false);
+    }
+  };
   const filteredProducts = useMemo(() => {
     if (!searchTerm) {
       return products;
@@ -83,7 +108,7 @@ const ShopManager = ({ products, onAdd, onEdit, onDelete }) => {
                   key={product._id}
                   product={product}
                   onEdit={onEdit}
-                  onDelete={onDelete}
+                  onDelete={openDeleteProductConfirmation} // Use the new handler
                 />
               ))}
             </div>
@@ -105,6 +130,19 @@ const ShopManager = ({ products, onAdd, onEdit, onDelete }) => {
           </div>
         )}
       </GlassCard> 
+
+      {/* Delete Confirmation Modal for Products */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteProductModalOpen}
+        onClose={() => {
+          setIsDeleteProductModalOpen(false);
+          setDeletingProductId(null);
+        }}
+        onConfirm={confirmDeleteProduct}
+        isLoading={isDeletingProduct}
+        title="Delete Product?"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+      />
     </>
   );
 };

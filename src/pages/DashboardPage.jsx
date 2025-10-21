@@ -249,8 +249,6 @@ const DashboardPage = () => {
   };
 
   const handleDeleteProduct = async (productId) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) 
-      return;
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
       await axios.delete(`http://localhost:5001/api/products/${productId}`, config);
@@ -352,10 +350,10 @@ const DashboardPage = () => {
               <div className="space-y-1">
                 {[
                   { id: 'links', label: '🔗 My Links' },
-                  { id: 'shop', label: '🛒 My Shop' },
                   { id: 'profile', label: '👤 Profile' },
                   { id: 'themes', label: '🎨 Themes' },
-                  { id: 'analytics', label: '📊 Analytics' }
+                  { id: 'analytics', label: '📊 Analytics' },
+                  { id: 'shop', label: '🛒 My Shop' },
                 ].map((tab) => (
                   <button
                     key={tab.id}

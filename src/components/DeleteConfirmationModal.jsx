@@ -7,7 +7,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
       <GlassCard className="w-full max-w-md p-0">
         <div className="p-6 flex justify-between items-center border-b border-white/20">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
