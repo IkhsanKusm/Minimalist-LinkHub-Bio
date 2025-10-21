@@ -14,10 +14,12 @@ const ProfileEditor = ({ user, onSave }) => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
+      setError(null); // Reset error on new save attempt
       const config = {
         headers: {
           'Content-Type': 'application/json',
@@ -32,8 +34,12 @@ const ProfileEditor = ({ user, onSave }) => {
       onSave(updatedUser); // Update the parent state
       setIsEditing(false);
     } catch (error) {
+      if (error.response && error.response.status === 409) {
+        setError('This username is already taken. Please choose another one.');
+      } else {
+        setError('An error occurred while updating your profile. Please try again.');
+      }
       console.error('Failed to update profile:', error);
-      alert('Error: Could not update profile.');
     } finally {
       setIsLoading(false);
     }
@@ -54,6 +60,15 @@ const ProfileEditor = ({ user, onSave }) => {
           </div>
         )}
       </div>
+
+      {error && (
+        <div className="p-3 mb-4 bg-red-100 border border-red-300 text-red-800 rounded-xl text-sm flex items-center space-x-2">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+          </span>
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="space-y-6">
         {/* Avatar Upload */}
