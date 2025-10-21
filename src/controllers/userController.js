@@ -100,8 +100,11 @@ const updateUserProfile = async (req, res) => {
 
   if (user) {
     user.username = req.body.username || user.username;
-    user.bio = req.body.bio || user.bio;
     user.theme = req.body.theme || user.theme;
+
+    if (req.body.bio !== undefined) {
+      user.bio = req.body.bio;
+    }
     
     // Handle the new profilePhotoUrl field
     // If it's sent in the body, update it. If an empty string is sent, it will be saved.
