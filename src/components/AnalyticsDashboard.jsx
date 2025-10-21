@@ -89,8 +89,8 @@ const AnalyticsDashboard = () => {
         <h3 className="font-bold text-lg mb-4">Top Performing Links</h3>
         <div className="space-y-3">
           {data.topLinks.map((link, index) => (
-            <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <div>
+            <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg gap-4">
+              <div className="min-w-0 flex-1">
                 <div className="font-semibold text-gray-800">{link.title}</div>
                 <div className="text-sm text-gray-500 truncate">{link.url}</div>
               </div>
@@ -106,8 +106,8 @@ const AnalyticsDashboard = () => {
           <h3 className="font-bold text-lg mb-4">Top Performing Products</h3>
           <div className="space-y-3">
             {data.topProducts.map((product, index) => (
-              <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <div>
+            <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg gap-4">
+                <div className='min-w-0 flex-1'>
                   <div className="font-semibold text-gray-800">{product.title}</div>
                   <div className="text-sm text-gray-500 truncate">{product.productUrl}</div>
                 </div>
