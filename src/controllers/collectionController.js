@@ -22,9 +22,6 @@ const createCollection = asyncHandler(async (req, res) => {
 
   const createdCollection = await collection.save();
   res.status(201).json(createdCollection);
-
-  //const collection = await Collection.create({ title, user: req.user._id });
-  //res.status(201).json(collection);
 });
 
 // @desc    Get logged in user's collections

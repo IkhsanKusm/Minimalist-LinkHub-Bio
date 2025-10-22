@@ -64,7 +64,6 @@ const updateLink = asyncHandler(async (req, res) => {
     link.url = url || link.url;
     link.type = type || link.type;
 
-    // --- HANDLE COLLECTION ASSIGNMENT ---
     // If collectionId is provided (even as an empty string for 'Uncategorized')
     if (collectionId !== undefined) {
       // An empty string or null means collection are un-categorizing the link
