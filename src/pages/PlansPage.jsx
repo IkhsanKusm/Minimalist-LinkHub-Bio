@@ -9,7 +9,7 @@ const PlansPage = () => {
     {
       name: 'Free',
       description: 'Perfect for creators and individuals getting started with their online presence.',
-      price: 'Rp0',
+      price: '$0',
       period: 'forever',
       popular: false,
       features: [
@@ -31,7 +31,7 @@ const PlansPage = () => {
     {
       name: 'Pro',
       description: 'The ultimate toolkit for professionals, marketers, and businesses to drive growth.',
-      price: 'Rp75.000,00',
+      price: '$5',
       period: 'per month',
       popular: true,
       features: [
@@ -146,7 +146,7 @@ const PlansPage = () => {
                     )}
                   </div>
                   
-                  <Link to="/register">
+                  <Link to="/contact">
                     <NeumorphicButton 
                       className={`w-full py-4 ${
                         plan.popular ? '' : 'variant="secondary"'

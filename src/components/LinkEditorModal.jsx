@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
@@ -28,7 +27,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collect
   const linkTypes = [
     { value: 'standard', label: 'Standard', icon: <Link size={24} />, pro: false },
     { value: 'image', label: 'Image', icon: <ImageIcon size={24} />, pro: false },
-    { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: false },
+    { value: 'video', label: 'Video', icon: <Youtube size={24} />, pro: true },
     { value: 'product', label: 'Product', icon: <ShoppingCart size={24} />, pro: true },
   ];
 

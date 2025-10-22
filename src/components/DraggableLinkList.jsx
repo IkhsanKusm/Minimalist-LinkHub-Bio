@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import { getLinkDetails } from '../utils/linkParser'; 
-export { SortableLinkItem } from './SortableLinkItem'; // Export for re-use
+export { SortableLinkItem } from './SortableLinkItem';
 import {
   useDroppable,
   DndContext,

@@ -16,7 +16,7 @@ const RegisterPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const { login } = useContext(AuthContext); // Get the login function from context
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -56,19 +56,19 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // **REAL API CALL**
+      // Real API Call
       const config = {
         headers: { 'Content-Type': 'application/json' },
       };
       const { data } = await axios.post(
-        'http://localhost:5001/api/users/register', // Our backend URL
+        'http://localhost:5001/api/users/register',
         { username: formData.username, email: formData.email, password: formData.password },
         config
       );
 
       // On success, call the login function from our context
       login(data);
-      navigate('/dashboard'); // Redirect to the dashboard
+      navigate('/dashboard');
 
     } catch (error) {
       console.error('Registration error:', error);

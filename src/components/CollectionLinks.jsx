@@ -14,7 +14,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { SortableLinkItem } from './DraggableLinkList'; // Re-using the SortableLinkItem
+import { SortableLinkItem } from './DraggableLinkList';
 import GlassCard from './GlassCard';
 
 const CollectionLinks = ({

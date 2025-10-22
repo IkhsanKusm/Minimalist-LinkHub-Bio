@@ -202,7 +202,7 @@ const DashboardPage = () => {
 
   // --- FULLY IMPLEMENTED PRODUCT CRUD HANDLERS ---
   const handleAddProductClick = () => {
-    setEditingProduct(null); // Ensure we are in "create" mode
+    setEditingProduct(null);
     setIsProductModalOpen(true);
   };
 
@@ -315,7 +315,7 @@ const DashboardPage = () => {
     });
 
     return { categorizedLinks: categorized, uncategorizedLinks: uncategorized };
-  }, [links]);
+  }, [collections, links]);
 
   const handleReorderLinks = (collectionId, reorderedLinksInCollection) => {
     // This is a complex operation if user want to persist order to the backend.

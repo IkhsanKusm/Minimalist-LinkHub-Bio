@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
-import DeleteConfirmationModal from './DeleteConfirmationModal'; // Import the modal
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { Edit, Trash2, Search, PackageX } from 'lucide-react';
 
 const ProductCard = ({ product, onEdit, onDelete }) => {
