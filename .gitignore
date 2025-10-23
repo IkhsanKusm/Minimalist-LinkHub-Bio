@@ -7,8 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# .gitignore in linkhub-frontend
 node_modules
+.env
+.env.*
+!.env.example
 dist
+
 dist-ssr
 *.local
 
@@ -22,3 +27,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
