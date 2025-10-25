@@ -52,7 +52,7 @@ const PublicProfilePage = () => {
   const handleLinkClick = async (link) => {
     try {
       // Send the tracking request but don't wait for it to finish.
-      axios.post(`http://localhost:5001/api/links/track/${link._id}`);
+      axios.post(`/api/links/track/${link._id}`);
     } catch (error) {
       console.error('Failed to track click:', error);
     }
@@ -62,7 +62,7 @@ const PublicProfilePage = () => {
     const fetchProfile = async () => {
       try {
         setIsLoading(true);
-        const { data } = await axios.get(`http://localhost:5001/api/users/public-profile/${username}`);
+        const { data } = await axios.get(`/api/users/public-profile/${username}`);
         setProfile(data.profile);
         setLinks(data.links);
         setProducts(data.products || []);
@@ -80,7 +80,7 @@ const PublicProfilePage = () => {
   const handleItemClick = async (item, type) => {
     try {
       // Use 'links' or 'products' to build the correct URL
-      axios.post(`http://localhost:5001/api/${type}/track/${item._id}`);
+      axios.post(`/api/${type}/track/${item._id}`);
     } catch (error) {
       console.error(`Failed to track ${type} click:`, error);
     }

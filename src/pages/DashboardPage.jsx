@@ -63,10 +63,10 @@ const DashboardPage = () => {
       try {
         // Fetch links, profile and products in parallel
         const [linksRes, profileRes, productsRes, collectionsRes] = await Promise.all([
-          axios.get('http://localhost:5001/api/links', config),
-          axios.get('http://localhost:5001/api/users/profile', config),
-          axios.get('http://localhost:5001/api/products', config),
-          axios.get('http://localhost:5001/api/collections', config),
+          axios.get('/api/links', config),
+          axios.get('/api/users/profile', config),
+          axios.get('/api/products', config),
+          axios.get('/api/collections', config),
         ]);
         setLinks(linksRes.data);
         setUserProfile(profileRes.data);
@@ -97,7 +97,7 @@ const DashboardPage = () => {
       if (editingLink) {
         // --- UPDATE (PUT) ---
         const { data: updatedLink } = await axios.put(
-          `http://localhost:5001/api/links/${editingLink._id}`,
+          `/api/links/${editingLink._id}`,
           linkData,
           config
         );
@@ -105,7 +105,7 @@ const DashboardPage = () => {
       } else {
         // --- CREATE (POST) ---
         const { data: newLink } = await axios.post(
-          'http://localhost:5001/api/links',
+          '/api/links',
           linkData,
           config
         );
@@ -131,7 +131,7 @@ const DashboardPage = () => {
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
       // --- DELETE ---
-      await axios.delete(`http://localhost:5001/api/links/${deletingLinkId}`, config);
+      await axios.delete(`/api/links/${deletingLinkId}`, config);
       setLinks(links.filter(link => link._id !== deletingLinkId));
       
       // Close modal and reset state
@@ -156,7 +156,7 @@ const DashboardPage = () => {
     setIsDeletingCollection(true);
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-      await axios.delete(`http://localhost:5001/api/collections/${deletingCollectionId}`, config);
+      await axios.delete(`/api/collections/${deletingCollectionId}`, config);
       
       // Optimistically update state
       setCollections(collections.filter(col => col._id !== deletingCollectionId));
@@ -187,7 +187,7 @@ const DashboardPage = () => {
       };
       // API call to update the theme
       const { data: updatedUser } = await axios.put(
-        'http://localhost:5001/api/users/profile',
+        '/api/users/profile',
         { theme: themeId }, // Send only the theme to be updated
         config
       );
@@ -223,7 +223,7 @@ const DashboardPage = () => {
       if (editingProduct) {
         // UPDATE Product
         const { data: updatedProduct } = await axios.put(
-          `http://localhost:5001/api/products/${editingProduct._id}`,
+          `/api/products/${editingProduct._id}`,
           productData,
           config
         );
@@ -231,7 +231,7 @@ const DashboardPage = () => {
       } else {
         // CREATE Product
         const { data: newProduct } = await axios.post(
-          'http://localhost:5001/api/products',
+          '/api/products',
           productData,
           config
         );
@@ -251,7 +251,7 @@ const DashboardPage = () => {
   const handleDeleteProduct = async (productId) => {
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-      await axios.delete(`http://localhost:5001/api/products/${productId}`, config);
+      await axios.delete(`/api/products/${productId}`, config);
       setProducts(products.filter(p => p._id !== productId));
     } catch (err) {
       console.error('Failed to delete product:', err);
@@ -268,7 +268,7 @@ const DashboardPage = () => {
     };
     try {
       const { data: updatedLink } = await axios.put(
-        `http://localhost:5001/api/links/${linkId}`,
+        `/api/links/${linkId}`,
         { collectionId: collectionId },
         config
       );
@@ -291,7 +291,7 @@ const DashboardPage = () => {
     };
     try {
       const orderedIds = reorderedCollections.map(c => c._id);
-      await axios.put('http://localhost:5001/api/collections/reorder', { orderedIds }, config);
+      await axios.put('/api/collections/reorder', { orderedIds }, config);
     } catch (err) {
       console.error('Failed to reorder collections:', err);
       // NOTE: Here user might want to revert the state to its previous value
@@ -404,7 +404,7 @@ const DashboardPage = () => {
                   };
                   try {
                     const { data: newCollection } = await axios.post(
-                      'http://localhost:5001/api/collections',
+                      '/api/collections',
                       { title },
                       config,
                     );

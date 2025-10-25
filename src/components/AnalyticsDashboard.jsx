@@ -19,7 +19,7 @@ const AnalyticsDashboard = () => {
           headers: { Authorization: `Bearer ${userInfo.token}` },
           params: { period },
         };
-        const { data } = await axios.get('http://localhost:5001/api/analytics', config);
+        const { data } = await axios.get('/api/analytics', config);
         setData(data);
       } catch (error) {
         console.error("Failed to fetch analytics", error);

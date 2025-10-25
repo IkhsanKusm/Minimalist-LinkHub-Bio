@@ -27,7 +27,7 @@ const ProfileEditor = ({ user, onSave }) => {
         },
       };
       const { data: updatedUser } = await axios.put(
-        'http://localhost:5001/api/users/profile',
+        '/api/users/profile',
         formData,
         config
       );
