@@ -1,5 +1,5 @@
-import connectDB from '../../../../src/backend/config/db.js';
-import Collection from '../../../../src/backend/models/collectionModel.js';
+import connectDB from '../../../src/backend/config/db.js';
+import Collection from '../../../src/backend/models/collectionModel.js';
 import mongoose from 'mongoose';
 
 export default async function handler(req, res) {

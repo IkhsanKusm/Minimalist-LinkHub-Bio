@@ -1,7 +1,7 @@
-import connectDB from '../../../src/backend/config/db.js';
-import Collection from '../../../src/backend/models/collectionModel.js';
-import Link from '../../../src/backend/models/linkModel.js';
-import protect from '../../../src/backend/middleware/authMiddleware.js';
+import connectDB from '../../src/backend/config/db.js';
+import Collection from '../../src/backend/models/collectionModel.js';
+import Link from '../../src/backend/models/linkModel.js';
+import protect from '../../src/backend/middleware/authMiddleware.js';
 import mongoose from 'mongoose';
 
 const deleteCollection = async (req, res) => {

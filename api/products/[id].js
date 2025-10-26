@@ -1,6 +1,6 @@
-import connectDB from '../../../src/backend/config/db.js';
-import Product from '../../../src/backend/models/productModel.js';
-import protect from '../../../src/backend/middleware/authMiddleware.js';
+import connectDB from '../../src/backend/config/db.js';
+import Product from '../../src/backend/models/productModel.js';
+import protect from '../../src/backend/middleware/authMiddleware.js';
 import mongoose from 'mongoose';
 
 const updateProduct = async (req, res) => {

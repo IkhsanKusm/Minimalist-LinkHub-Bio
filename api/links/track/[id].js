@@ -1,6 +1,6 @@
-import connectDB from '../../../../src/backend/config/db.js';
-import Link from '../../../../src/backend/models/linkModel.js';
-import Click from '../../../../src/backend/models/clickModel.js';
+import connectDB from '../../../src/backend/config/db.js';
+import Link from '../../../src/backend/models/linkModel.js';
+import Click from '../../../src/backend/models/clickModel.js';
 import mongoose from 'mongoose';
 
 export default async function handler(req, res) {
