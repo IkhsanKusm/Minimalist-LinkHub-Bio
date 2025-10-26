@@ -89,7 +89,7 @@ const ProfileEditor = ({ user, onSave }) => {
                 type="url"
                 value={formData.profilePhotoUrl}
                 onChange={(e) => setFormData(prev => ({ ...prev, profilePhotoUrl: e.target.value }))}
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 placeholder="https://..."
               />
             ) : <p className="text-sm text-gray-500 truncate">{formData.profilePhotoUrl || 'No image URL set.'}</p>}
@@ -106,7 +106,7 @@ const ProfileEditor = ({ user, onSave }) => {
               type="text"
               value={formData.username}
               onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
               placeholder="yourusername"
             />
           ) : (
@@ -126,7 +126,7 @@ const ProfileEditor = ({ user, onSave }) => {
               value={formData.bio}
               onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
               rows={3}
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
               placeholder="Tell people about yourself..."
             />
           ) : (

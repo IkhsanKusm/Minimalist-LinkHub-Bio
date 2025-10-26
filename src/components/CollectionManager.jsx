@@ -100,7 +100,7 @@ const CollectionManager = ({ collections = [], onCreate, onDelete, onReorder }) 
             onChange={(e) => setNewCollectionTitle(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
             placeholder="New collection name..."
-            className="flex-grow px-4 py-2 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
+            className="flex-grow px-4 py-2 bg-white border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
           />
           <NeumorphicButton onClick={handleCreate}>
             <Plus size={20} />
