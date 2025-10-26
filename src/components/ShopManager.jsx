@@ -13,7 +13,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
       <div className="p-3">
         <h4 className="font-semibold text-gray-800 truncate">{product.title}</h4>
         <p className="text-green-600 font-bold text-sm">
-          Rp{Number(product.price || 0).toLocaleString('id-ID')}
+          ${Number(product.price || 0).toLocaleString('id-ID')}
         </p>
       </div>
       {/* Hover Actions */}

@@ -30,7 +30,7 @@ const ProductCard = ({ product, onClick, theme }) => {
         <p className={`text-sm truncate h-5 ${theme.text || 'text-gray-600'}`}>{product.description || ' '}</p>
         <div className="mt-2">
           <span className={`text-lg font-extrabold ${theme.accent || 'text-green-600'}`}>
-            Rp{Number(product.price || 0).toLocaleString('id-ID', {
+            ${Number(product.price || 0).toLocaleString('id-ID', {
               minimumFractionDigits: 0,
               maximumFractionDigits: 2,
             })}
