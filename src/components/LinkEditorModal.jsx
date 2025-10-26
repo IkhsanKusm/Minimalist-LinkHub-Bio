@@ -73,9 +73,9 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collect
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-      <GlassCard className="w-full max-w-lg p-0 flex flex-col max-h-[90vh]">
-        <div className="p-6 flex justify-between items-center border-b border-white/20">
+    <div className={`fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in`}>
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-gray-200/80 transform transition-all animate-pop-in">
+        <div className="p-6 flex justify-between items-center border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">{link ? 'Edit Link' : 'Add New Link'}</h2>
           <button onClick={onClose} className="p-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors">
             <X size={24} />
@@ -119,8 +119,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collect
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}                className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent focus:outline-none transition-all ${
                   errors.title ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
                 }`}
                 placeholder="e.g., My Portfolio"
@@ -135,7 +134,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collect
                 type="url"
                 value={formData.url}
                 onChange={handleUrlChange}
-                className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+                className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent focus:outline-none transition-all ${
                   errors.url ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
                 }`}
                 placeholder="https://example.com"
@@ -150,7 +149,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collect
                 <select
                   value={formData.collectionId || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, collectionId: e.target.value }))}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 >
                   <option value="">Uncategorized</option>
                   {collections.map(collection => (
@@ -194,11 +193,11 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collect
           )}
         </div>
 
-        <div className="p-6 flex justify-end space-x-3 bg-gray-50/50 rounded-b-2xl">
+        <div className="p-6 flex justify-end space-x-3 bg-gray-50 rounded-b-2xl border-t border-gray-200">
           <NeumorphicButton variant="secondary" onClick={onClose}>Cancel</NeumorphicButton>
           <NeumorphicButton onClick={handleSave}>{link ? 'Save Changes' : 'Create Link'}</NeumorphicButton>
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 };
