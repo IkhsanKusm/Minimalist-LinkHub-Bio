@@ -3,8 +3,8 @@ import Collection from '../../../../src/backend/models/collectionModel.js';
 import mongoose from 'mongoose';
 
 export default async function handler(req, res) {
-    if (req.method !== 'GET') return res.status(405).json({ message: 'Method Not Allowed' });
     await connectDB();
+    if (req.method !== 'GET') return res.status(405).json({ message: 'Method Not Allowed' });
     const { userId } = req.query;
     if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).json({ message: 'Invalid User ID' });
 

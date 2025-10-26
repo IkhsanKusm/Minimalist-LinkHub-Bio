@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 import jwt from 'jsonwebtoken';
-import asyncHandler from 'express-async-handler'; // Keep using this helper
-import User from '../models/userModel.js'; // Assuming ES modules
+import asyncHandler from 'express-async-handler';
+import User from '../models/userModel.js';
+import connectDB from '../config/db.js';
 
 const protect = (handler) => asyncHandler(async (req, res) => {
+  await connectDB();
   let token;
   const authHeader = req.headers.authorization;
 

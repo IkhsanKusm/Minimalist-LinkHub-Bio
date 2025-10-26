@@ -4,8 +4,8 @@ import Click from '../../../../src/backend/models/clickModel.js';
 import mongoose from 'mongoose';
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).json({ message: 'Method Not Allowed' });
     await connectDB();
+    if (req.method !== 'POST') return res.status(405).json({ message: 'Method Not Allowed' });
     const { id } = req.query;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID' });
 

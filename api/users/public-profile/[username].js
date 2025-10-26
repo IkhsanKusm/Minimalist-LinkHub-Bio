@@ -5,11 +5,11 @@ import Product from '../../../src/backend/models/productModel.js';
 import Collection from '../../../src/backend/models/collectionModel.js';
 
 export default async function handler(req, res) {
+  await connectDB();
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  await connectDB();
   const { username } = req.query; // Get username from the dynamic route parameter
 
   try {
