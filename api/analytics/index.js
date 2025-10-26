@@ -11,7 +11,7 @@ const getAnalytics = async (req, res) => {
 
     let startDate;
     const now = new Date();
-    // Calculate startDate based on period ('7d', '30d', '90d') - Your original logic is fine
+    // Calculate startDate based on period ('7d', '30d', '90d')
     if (period === '7d') startDate = new Date(new Date().setDate(now.getDate() - 7));
     else if (period === '90d') startDate = new Date(new Date().setDate(now.getDate() - 90));
     else startDate = new Date(new Date().setDate(now.getDate() - 30));

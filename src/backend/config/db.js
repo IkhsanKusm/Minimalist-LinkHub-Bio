@@ -26,14 +26,13 @@ async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 30000, // Timeout 30 detik
+      serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
       retryWrites: true,
       w: 'majority'
     };
 
-    console.log("Creating new DB connection promise");
     cached.promise = mongoose.connect(MONGODB_URI, opts)
       .then((mongooseInstance) => {
         console.log(`MongoDB Connected: ${mongooseInstance.connection.host}`);
@@ -47,7 +46,6 @@ async function connectDB() {
   }
 
   try {
-    console.log("Awaiting DB connection promise");
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
@@ -57,7 +55,7 @@ async function connectDB() {
   return cached.conn;
 }
 
-// Handle connection events untuk error handling yang lebih baik
+// Handle connection events for better error handling
 mongoose.connection.on('error', err => {
   console.error('MongoDB connection error:', err);
 });

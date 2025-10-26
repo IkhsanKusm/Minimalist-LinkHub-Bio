@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-vars */
 import connectDB from '../../src/backend/config/db.js';
 import User from '../../src/backend/models/userModel.js';
 import generateToken from '../../src/backend/utils/generateToken.js';
-import bcrypt from 'bcryptjs'; // Need bcrypt here if hashing isn't solely in the model's pre-save hook
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
