@@ -20,37 +20,50 @@ if (!cached) {
 
 async function connectDB() {
   if (cached.conn) {
-    // console.log("Using cached DB connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false, // Disable buffering if not connected
-      // useNewUrlParser: true, // Deprecated
-      // useUnifiedTopology: true, // Deprecated
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 30000, // Timeout 30 detik
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      retryWrites: true,
+      w: 'majority'
     };
 
     console.log("Creating new DB connection promise");
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
-      console.log(`MongoDB Connected: ${mongooseInstance.connection.host}`);
-      return mongooseInstance;
-    }).catch(error => {
+    cached.promise = mongoose.connect(MONGODB_URI, opts)
+      .then((mongooseInstance) => {
+        console.log(`MongoDB Connected: ${mongooseInstance.connection.host}`);
+        return mongooseInstance;
+      })
+      .catch(error => {
         console.error(`DB Connection Error: ${error.message}`);
-        cached.promise = null; // Reset promise on error
-        throw error; // Rethrow or handle as needed
-    });
+        cached.promise = null;
+        throw error;
+      });
   }
 
   try {
-      console.log("Awaiting DB connection promise");
-      cached.conn = await cached.promise;
+    console.log("Awaiting DB connection promise");
+    cached.conn = await cached.promise;
   } catch (e) {
-      cached.promise = null; // Ensure promise is reset on failed connection attempt
-      throw e;
+    cached.promise = null;
+    throw e;
   }
 
   return cached.conn;
 }
 
-export default connectDB; // Use ES module export
+// Handle connection events untuk error handling yang lebih baik
+mongoose.connection.on('error', err => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
+
+export default connectDB;
