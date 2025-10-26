@@ -332,7 +332,14 @@ const DashboardPage = () => {
   };
 
   if (isLoading) {
-    return <div className="pt-32 text-center">Loading your dashboard...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-lg font-semibold text-gray-700">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {

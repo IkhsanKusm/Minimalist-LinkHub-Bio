@@ -101,7 +101,14 @@ const PublicProfilePage = () => {
   const displayedProducts = activeCollectionId ? [] : products;
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-100">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-200">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-white/50 border-t-white rounded-full animate-spin"></div>
+          <p className="mt-4 text-white/80 font-semibold">Loading Profile...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -110,12 +117,12 @@ const PublicProfilePage = () => {
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-500 ${activeTheme.bg} ${activeTheme.text}`}>
-      <div className="max-w-3xl mx-auto p-4 md:p-8">
+      <div className="max-w-3xl mx-auto p-6 sm:p-8 md:p-12">
         {/* Banner Image Placeholder */}
-        <div className="h-40 md:h-56 bg-gradient-to-r from-blue-200 to-purple-300 rounded-2xl shadow-inner mb-[-4rem] md:mb-[-5rem]"></div>
+        <div className="h-48 md:h-64 bg-gradient-to-r from-blue-200 to-purple-300 rounded-3xl shadow-inner mb-[-4rem] md:mb-[-5rem]"></div>
 
         {/* Profile Header */}
-        <header className="relative text-center mb-10">
+        <header className="relative text-center mb-12">
           <div className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto border-4 border-white shadow-lg flex items-center justify-center overflow-hidden bg-gray-200">
              {profile.profilePhotoUrl ? (
                 <img src={profile.profilePhotoUrl} alt={profile.username} className="w-full h-full object-cover" />
@@ -129,11 +136,11 @@ const PublicProfilePage = () => {
           <p className="text-base mt-2 max-w-md mx-auto opacity-80">{profile.bio}</p>
         </header>
 
-        <main className="space-y-10">
+        <main className="space-y-8">
           {/* Stories Section */}
-          {storyLinks.length > 0 && (
-            <section>
-              <div className="flex space-x-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+          {storyLinks.length > 0 && (            
+            <section className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-lg">
+              <div className="flex space-x-4 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
                 {storyLinks.map(link => (
                   <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 text-center group">
                     <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 transform group-hover:scale-105 transition-transform">
@@ -150,8 +157,8 @@ const PublicProfilePage = () => {
 
           {/* Collections Tab Section */}
           {collections.length > 0 && (
-            <section className="my-6">
-              <div className="flex space-x-2 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+            <section>
+              <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
                 <button
                   onClick={() => setActiveCollectionId(null)}
                   className={`flex-shrink-0 px-5 py-2.5 text-sm font-bold rounded-full transition-all duration-300 ${
@@ -179,9 +186,9 @@ const PublicProfilePage = () => {
 
           {/* Featured Videos Section */}
           {videoLinks.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold mb-4 px-1">Featured Videos</h2>
-              <div className="flex space-x-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+            <section className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-lg">
+              <h2 className={`text-xl font-bold mb-4 ${activeTheme.name}`}>Featured Videos</h2>
+              <div className="flex space-x-4 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
                 {videoLinks.map(link => (
                   <VideoLinkCard
                     key={link._id}
@@ -196,8 +203,8 @@ const PublicProfilePage = () => {
           
           {/* Image Gallery Section */}
           {imageLinks.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold mb-4 px-1">Gallery</h2>
+            <section className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-lg">
+              <h2 className={`text-xl font-bold mb-4 ${activeTheme.name}`}>Gallery</h2>
               <ImageGallery 
                 images={imageLinks} 
                 handleItemClick={handleItemClick}
@@ -207,8 +214,8 @@ const PublicProfilePage = () => {
           
           {/* Shop Section */}
           {displayedProducts.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold mb-4 px-1">Mini Shop Collection</h2>
+            <section className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-lg">
+              <h2 className={`text-xl font-bold mb-4 ${activeTheme.name}`}>Mini Shop</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {displayedProducts.map(product => (
                   <ProductCard
@@ -224,8 +231,8 @@ const PublicProfilePage = () => {
           
           {/* Standard Links Section */}
           {standardLinks.length > 0 && (
-            <section>
-              <div className="space-y-4">
+            <section className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-lg">
+              <div className="space-y-3">
                 {standardLinks.map(link => (
                   <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`block rounded-full shadow-lg p-4 text-center font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${activeTheme.button}`}>
                     {link.title}
@@ -237,8 +244,8 @@ const PublicProfilePage = () => {
 
           {/* Products Links Section */}
           {productLinks.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold mb-4 px-1">Product Links</h2>
+            <section className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-lg">
+              <h2 className={`text-xl font-bold mb-4 ${activeTheme.name}`}>Product Links</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {productLinks.map(link => (
                   <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`block rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl overflow-hidden ${activeTheme.button}`}>
