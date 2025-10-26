@@ -14,15 +14,13 @@ const PlansPage = () => {
       popular: false,
       features: [
         { name: 'Unlimited Links', included: true },
-        { name: 'Drag & Drop Link Management', included: true },
-        { name: 'Pre-defined Themes', included: true },
-        { name: 'Profile Customization', included: true },
-        { name: 'Public Profile Page', included: true },
-        { name: 'Community Support', included: true },
-        { name: 'Integrated E-commerce', included: false },
+        { name: 'Link Collections', included: true },
+        { name: 'Basic Link Types (Standard, Image)', included: true },
+        { name: 'Basic Profile Customization', included: true },
+        { name: 'Basic Themes', included: true },
+        { name: 'Mini Shop (E-commerce)', included: false },
         { name: 'Audience Analytics', included: false },
         { name: 'Premium Themes', included: false },
-        { name: 'Remove Onesi Branding', included: false },
         { name: 'Priority Support', included: false }
       ],
       cta: 'Get Started Free',
@@ -36,15 +34,13 @@ const PlansPage = () => {
       popular: true,
       features: [
         { name: 'Unlimited Links', included: true },
-        { name: 'Drag & Drop Link Management', included: true },
-        { name: 'Pre-defined Themes', included: true },
-        { name: 'Profile Customization', included: true },
-        { name: 'Public Profile Page', included: true },
-        { name: 'Community Support', included: true },
-        { name: 'Integrated E-commerce', included: true },
+        { name: 'Link Collections', included: true },
+        { name: 'All Link Types (Video, Product)', included: true },
+        { name: 'Full Profile Customization', included: true },
+        { name: 'All Themes (including Premium)', included: true },
+        { name: 'Mini Shop (E-commerce)', included: true },
         { name: 'Audience Analytics', included: true },
         { name: 'Premium Themes', included: true },
-        { name: 'Remove Onesi Branding', included: true },
         { name: 'Priority Support', included: true }
       ],
       cta: 'Go Pro',
@@ -69,32 +65,42 @@ const PlansPage = () => {
       pro: true
     },
     {
+      feature: 'Link Collections',
+      free: true,
+      pro: true
+    },
+    {
+      feature: 'Basic Link Types (Standard, Image)',
+      free: true,
+      pro: true
+    },
+    {
+      feature: 'Image Stories & Galleries',
+      free: true,
+      pro: true
+    },
+    {
       feature: 'Basic Themes',
       free: true,
       pro: true
     },
     {
-      feature: 'Integrated E-commerce (Mini-Shop)',
+      feature: 'Advanced Link Types (Video, Product)',
       free: false,
       pro: true
     },
     {
-      feature: 'Audience & Performance Analytics',
+      feature: 'Access to All Premium Themes',
       free: false,
       pro: true
     },
     {
-      feature: 'Access to Premium Themes',
+      feature: 'Mini Shop (E-commerce)',
       free: false,
       pro: true
     },
     {
-      feature: 'Remove \'Powered by Onesi\' Branding',
-      free: false,
-      pro: true
-    },
-    {
-      feature: 'Priority Customer Support',
+      feature: 'Link & Product Analytics',
       free: false,
       pro: true
     }
