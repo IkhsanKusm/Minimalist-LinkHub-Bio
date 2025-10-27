@@ -52,7 +52,7 @@ const PublicProfilePage = () => {
   const handleLinkClick = async (link) => {
     try {
       // Send the tracking request but don't wait for it to finish.
-      axios.post(`/api/links/track/${link._id}`);
+      axios.post(`/api/links/${link._id}`);
     } catch (error) {
       console.error('Failed to track click:', error);
     }
@@ -80,7 +80,7 @@ const PublicProfilePage = () => {
   const handleItemClick = async (item, type) => {
     try {
       // Use 'links' or 'products' to build the correct URL
-      axios.post(`/api/${type}/track/${item._id}`);
+      axios.post(`/api/${type}/${item._id}`);
     } catch (error) {
       console.error(`Failed to track ${type} click:`, error);
     }
@@ -251,8 +251,8 @@ const PublicProfilePage = () => {
                   <a onClick={() => handleLinkClick(link)} key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" className={`block rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl overflow-hidden ${activeTheme.button}`}>
                     <div className="p-4 flex items-center space-x-4">
                       <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-2xl">🛒</div>
-                      <div>
-                        <p className="font-semibold">{link.title}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold truncate">{link.title}</p>
                         <p className="text-sm opacity-70 truncate">{link.url}</p>
                       </div>
                     </div>
