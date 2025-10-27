@@ -2,7 +2,7 @@ import connectDB from '../../src/backend/config/db.js';
 import User from '../../src/backend/models/userModel.js';
 import protect from '../../src/backend/middleware/authMiddleware.js';
 
-// Define the core logic for GET
+// The Core Logic GET
 const getUserProfile = async (req, res) => {
   // protect middleware already attached req.user
   const user = await User.findById(req.user._id).select('-password'); // Re-fetch to be safe or use req.user
@@ -20,7 +20,7 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-// Define the core logic for PUT
+// The Core Logic PUT
 const updateUserProfile = async (req, res) => {
   const user = await User.findById(req.user._id);
 
@@ -35,7 +35,7 @@ const updateUserProfile = async (req, res) => {
       res.status(200).json({
         _id: updatedUser._id,
         username: updatedUser.username,
-        email: updatedUser.email, // Be careful not to allow email changes easily
+        email: updatedUser.email,
         bio: updatedUser.bio,
         profilePhotoUrl: updatedUser.profilePhotoUrl,
         theme: updatedUser.theme,
@@ -64,5 +64,4 @@ const profileHandler = async (req, res) => {
   }
 };
 
-// Export the protected handler
 export default protect(profileHandler);

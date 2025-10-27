@@ -86,12 +86,12 @@ const linkIdHandler = async (req, res) => {
     await connectDB();
     if (req.method === 'PUT') {
         // Protect PUT request
-        return protect(updateLink)(req, res); // Call protect manually here
+        return protect(updateLink)(req, res);
     } else if (req.method === 'DELETE') {
         // Protect DELETE request
-        return protect(deleteLink)(req, res); // Call protect manually here
+        return protect(deleteLink)(req, res);
     } else if (req.method === 'POST') {
-        // Tracking is PUBLIC, do not protect
+        // Tracking is PUBLIC
         return trackLink(req, res);
     } else {
         res.setHeader('Allow', ['PUT', 'DELETE', 'POST']);

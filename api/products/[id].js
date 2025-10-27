@@ -77,7 +77,7 @@ const productIdHandler = async (req, res) => {
         // Protect DELETE request
         return protect(deleteProduct)(req, res);
     } else if (req.method === 'POST') {
-         // Tracking is PUBLIC, do not protect
+         // Tracking is PUBLIC
         return trackProduct(req, res);
     } else {
         res.setHeader('Allow', ['PUT', 'DELETE', 'POST']);
