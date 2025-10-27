@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useLayoutEffect, useRef } from 'react';
-import { getLinkDetails } from '../utils/linkParser'; 
+import { getLinkDetails } from '../utils/linkParser';
 export { SortableLinkItem } from './SortableLinkItem';
 import {
   useDroppable,
@@ -112,7 +112,7 @@ const SortableLinkItem = ({ link, onEdit, onDelete, onHover, onLeave }) => {
   );
 };
 
-const LinkPreviewCard = ({ link, containerRef }) => {
+export const LinkPreviewCard = ({ link, containerRef }) => {
   const [style, setStyle] = useState({});
   const cardRef = useRef(null);
 
@@ -187,17 +187,14 @@ const LinkPreviewCard = ({ link, containerRef }) => {
   );
 };
 
-const DraggableLinkList = ({ links, collections = [], onReorder, onEdit, onDelete, onAssignToCollection }) => {
+const DraggableLinkList = ({ links, collections = [], onReorder, onEdit, onDelete, onAssignToCollection, onLinkHover, onLinkLeave }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  const [hoveredLink, setHoveredLink] = useState(null);
-  const containerRef = useRef(null);
-
+  
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
@@ -219,17 +216,13 @@ const DraggableLinkList = ({ links, collections = [], onReorder, onEdit, onDelet
     }
   };
 
-  const handleHover = (link, element) => {
-    setHoveredLink({ ...link, element });
-  }
-
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <div className="relative" ref={containerRef}>
+      <div>
         {collections.length > 0 && (
           <div className="mb-8 p-4 bg-gray-50/50 rounded-xl border border-gray-200/50">
             <h3 className="font-semibold text-gray-700 mb-3">My Collections</h3>
@@ -250,13 +243,12 @@ const DraggableLinkList = ({ links, collections = [], onReorder, onEdit, onDelet
                 link={link}
                 onEdit={onEdit}
                 onDelete={onDelete}
-                onHover={handleHover}
-                onLeave={() => setHoveredLink(null)}
+                onHover={onLinkHover}
+                onLeave={onLinkLeave}
               />
             ))}
           </div>
         </SortableContext>
-        <LinkPreviewCard link={hoveredLink} containerRef={containerRef} />
       </div>
     </DndContext>
   );

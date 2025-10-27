@@ -1,6 +1,5 @@
 import React from 'react';
-import { X, Trash2, AlertTriangle } from 'lucide-react';
-import GlassCard from './GlassCard';
+import { X, AlertTriangle } from 'lucide-react';
 import NeumorphicButton from './NeumorphicButton';
 
 const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, isLoading, title = "Confirm Deletion", message = "Are you sure? This action cannot be undone." }) => {

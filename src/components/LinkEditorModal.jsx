@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
 import { Link, Youtube, Image as ImageIcon, ShoppingCart, X } from 'lucide-react';
 import { getLinkDetails, isValidUrl } from '../utils/linkParser';
@@ -143,7 +142,7 @@ const LinkEditorModal = ({ isOpen, onClose, link, onSave, isPro = false, collect
               {errors.url && <p className="text-xs text-red-600 mt-1">{errors.url}</p>}
             </div>
 
-            {/* --- NEW COLLECTION DROPDOWN --- */}
+            {/* --- New Collection Dropdown --- */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Collection (Optional)</label>
                 <select

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import GlassCard from './GlassCard';
 import NeumorphicButton from './NeumorphicButton';
 import { X, Image as ImageIcon } from 'lucide-react';
 import { isValidUrl } from '../utils/linkParser';

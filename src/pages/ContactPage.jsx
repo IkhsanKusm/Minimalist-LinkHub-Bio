@@ -1,7 +1,6 @@
 import React from 'react';
 import AnimatedBackground from '../components/AnimatedBackground';
 import GlassCard from '../components/GlassCard';
-import NeumorphicButton from '../components/NeumorphicButton';
 
 const ContactPage = () => {
 

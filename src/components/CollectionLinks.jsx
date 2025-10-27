@@ -24,6 +24,8 @@ const CollectionLinks = ({
   onEdit,
   onDelete,
   onAssignToCollection,
+  onLinkHover,
+  onLinkLeave,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -83,8 +85,8 @@ const CollectionLinks = ({
                 link={link}
                 onEdit={onEdit}
                 onDelete={onDelete}
-                onHover={() => {}}
-                onLeave={() => {}}
+                onHover={onLinkHover}
+                onLeave={onLinkLeave}
               />
             ))}
             {links.length === 0 && (

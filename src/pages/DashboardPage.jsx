@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
@@ -18,6 +18,7 @@ import ShopManager from '../components/ShopManager';
 import ProductEditorModal from '../components/ProductEditorModal';
 import CollectionManager from '../components/CollectionManager';
 import CollectionLinks from '../components/CollectionLinks';
+import { LinkPreviewCard } from '../components/DraggableLinkList';
 
 const DashboardPage = () => {
   const { userInfo } = useContext(AuthContext);
@@ -48,6 +49,11 @@ const DashboardPage = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);  
   const [currentTheme, setCurrentTheme] = useState('default');
+
+  // --- Link Preview State ---
+  const [hoveredLink, setHoveredLink] = useState(null);
+  const dashboardContainerRef = useRef(null);
+  const handleLinkHover = (link, element) => setHoveredLink({ ...link, element });
 
   // --- FETCH DATA FROM BACKEND ---
   useEffect(() => {
@@ -398,7 +404,7 @@ const DashboardPage = () => {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            {activeTab === 'links' && (
+            {activeTab === 'links' && (<div className="relative" ref={dashboardContainerRef}>
               <div className="space-y-8">
               <CollectionManager 
                 collections={collections} 
@@ -435,6 +441,8 @@ const DashboardPage = () => {
                     onEdit={(link) => { setEditingLink(link); setIsLinkModalOpen(true); }}
                     onDelete={openDeleteConfirmation}
                     onAssignToCollection={handleAssignLinkToCollection}
+                    onLinkHover={handleLinkHover}
+                    onLinkLeave={() => setHoveredLink(null)}
                   />
                 )
               ))}
@@ -472,6 +480,8 @@ const DashboardPage = () => {
                   }}
                   onDelete={openDeleteConfirmation}
                   onAssignToCollection={handleAssignLinkToCollection}
+                  onLinkHover={handleLinkHover}
+                  onLinkLeave={() => setHoveredLink(null)}
                 />
 
                 {links.length === 0 && (
@@ -489,7 +499,7 @@ const DashboardPage = () => {
                 </>
                 )}
               </GlassCard>
-              </div>
+              </div><LinkPreviewCard link={hoveredLink} containerRef={dashboardContainerRef} /></div>
             )}
 
             {activeTab === 'profile' && (

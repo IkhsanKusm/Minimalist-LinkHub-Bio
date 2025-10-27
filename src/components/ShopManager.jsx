@@ -39,7 +39,6 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
 
 const ShopManager = ({ products, onAdd, onEdit, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  // State for delete confirmation modal
   const [isDeleteProductModalOpen, setIsDeleteProductModalOpen] = useState(false);
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [isDeletingProduct, setIsDeletingProduct] = useState(false);
