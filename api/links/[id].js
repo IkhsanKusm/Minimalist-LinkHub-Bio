@@ -1,5 +1,6 @@
 import connectDB from '../../src/backend/config/db.js';
 import Link from '../../src/backend/models/linkModel.js';
+import Click from '../../src/backend/models/clickModel.js';
 import protect from '../../src/backend/middleware/authMiddleware.js';
 import mongoose from 'mongoose';
 
@@ -59,17 +60,43 @@ const deleteLink = async (req, res) => {
     }
 };
 
+// POST Logic for Tracking
+const trackLink = async (req, res) => {
+    const { id } = req.query;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid Link ID' });
+
+    try {
+        const link = await Link.findById(id);
+        if (link) {
+            link.clicks = (link.clicks || 0) + 1;
+            await link.save();
+            await Click.create({ linkId: link._id, userId: link.user });
+            res.status(200).json({ message: 'Click tracked' });
+        } else {
+            res.status(404).json({ message: 'Link not found' });
+        }
+    } catch (error) {
+        console.error("Track Link Error:", error);
+        res.status(500).json({ message: error.message || 'Error tracking click' });
+    }
+};
+
 // Main Handler
 const linkIdHandler = async (req, res) => {
     await connectDB();
     if (req.method === 'PUT') {
-        return updateLink(req, res);
+        // Protect PUT request
+        return protect(updateLink)(req, res); // Call protect manually here
     } else if (req.method === 'DELETE') {
-        return deleteLink(req, res);
+        // Protect DELETE request
+        return protect(deleteLink)(req, res); // Call protect manually here
+    } else if (req.method === 'POST') {
+        // Tracking is PUBLIC, do not protect
+        return trackLink(req, res);
     } else {
-        res.setHeader('Allow', ['PUT', 'DELETE']);
+        res.setHeader('Allow', ['PUT', 'DELETE', 'POST']);
         res.status(405).json({ message: `Method ${req.method} Not Allowed` });
     }
 };
 
-export default protect(linkIdHandler);
+export default linkIdHandler;

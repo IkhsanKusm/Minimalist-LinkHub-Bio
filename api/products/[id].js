@@ -1,5 +1,6 @@
 import connectDB from '../../src/backend/config/db.js';
 import Product from '../../src/backend/models/productModel.js';
+import Click from '../../src/backend/models/clickModel.js';
 import protect from '../../src/backend/middleware/authMiddleware.js';
 import mongoose from 'mongoose';
 
@@ -44,16 +45,44 @@ const deleteProduct = async (req, res) => {
    }
 };
 
-const handler = async (req, res) => {
+// POST Logic for Tracking
+const trackProduct = async (req, res) => {
+    const { id } = req.query;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID' });
+
+    try {
+        const product = await Product.findById(id);
+        if (product) {
+            product.clicks = (product.clicks || 0) + 1;
+            await product.save();
+            // Optionally create unified click event
+            await Click.create({ linkId: product._id, userId: product.user });
+            res.status(200).json({ message: 'Product click tracked' });
+        } else {
+            res.status(404).json({ message: 'Product not found' });
+        }
+    } catch (error) {
+        console.error("Track Product Error:", error);
+        res.status(500).json({ message: error.message || 'Error tracking product click' });
+    }
+};
+
+// Main Handler
+const productIdHandler = async (req, res) => {
     await connectDB();
     if (req.method === 'PUT') {
-        return updateProduct(req, res);
+        // Protect PUT request
+        return protect(updateProduct)(req, res);
     } else if (req.method === 'DELETE') {
-        return deleteProduct(req, res);
+        // Protect DELETE request
+        return protect(deleteProduct)(req, res);
+    } else if (req.method === 'POST') {
+         // Tracking is PUBLIC, do not protect
+        return trackProduct(req, res);
     } else {
-        res.setHeader('Allow', ['PUT', 'DELETE']);
+        res.setHeader('Allow', ['PUT', 'DELETE', 'POST']);
         res.status(405).json({ message: `Method ${req.method} Not Allowed` });
     }
 };
 
-export default protect(handler);
+export default productIdHandler;
