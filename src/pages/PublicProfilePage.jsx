@@ -96,7 +96,7 @@ const PublicProfilePage = () => {
   const productLinks = displayedLinks.filter(link => link.type === 'product');
   const standardLinks = displayedLinks.filter(link => !['video', 'image', 'product'].includes(getLinkDetails(link.url).type) && link.type !== 'product');
   
-  // Stories and Products are only shown on the main "All" tab for now
+  // Stories and Products are only shown on the main "All" tab
   const storyLinks = activeCollectionId ? [] : links.filter(link => getLinkDetails(link.url).type === 'image').slice(0, 8);
   const displayedProducts = activeCollectionId ? [] : products;
 
