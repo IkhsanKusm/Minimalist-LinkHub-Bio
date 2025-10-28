@@ -1,86 +1,109 @@
-# Onesi (Minimalist LinkHub) - Full-Stack SaaS
+# Onesi - Minimalist Link-in-Bio SaaS (Zero-Capital MVP)
 
-[![Vercel Deployment Status](https://vercel.com/miwyzards-projects/linkhub-frontend/badge)](https://linkhub-frontend-mauve.vercel.app/)
+[![Vercel Deployment Status](https://vercel.com/miwyzards-projects/linkhub-frontend/deploy-status)](https://linkhub-frontend-mauve.vercel.app/)
 
-A minimalist, full-stack SaaS application built as a developer portfolio piece. It provides users with a single, customizable, and professional landing page for all their links, similar to Linktree or Beacons, with a focus on a zero-capital, scalable MVP approach.
+Live Demo: [https://linkhub-frontend-mauve.vercel.app/](https://linkhub-frontend-mauve.vercel.app/)
 
-**Live Demo:** [https://linkhub-frontend-mauve.vercel.app/](https://linkhub-frontend-mauve.vercel.app/)
+## Overview
 
----
+Onesi (formerly LinkHub) is a full-stack SaaS application built as a portfolio project demonstrating end-to-end development skills and strategic business thinking. It provides users with a single, customizable, and professional landing page for all their links, similar to Linktree or Beacons, but built with a focus on a zero-capital, scalable MVP.
 
-## ✨ Features
+This project was built from scratch, covering the entire software development lifecycle, including planning, design, backend/API development, frontend development, and deployment.
 
-* **User Authentication:** Secure Sign Up, Login, Logout using JWT and password hashing (Bcrypt).
-* **Dashboard:** Private, authenticated area for managing profile, links, products, and collections.
+## Key Features
+
+### User Features (Freemium Model)
+
+* **Authentication:** Secure user sign-up, log-in, and log-out with email/password.
+* **Dashboard:** Private area to manage profile, links, collections, and view analytics.
 * **Profile Management:** Update username, bio, and profile picture (via external URL).
-* **Link Management:** Full CRUD (Create, Read, Update, Delete) for links..js]
-    * Supports Standard, Image, and Video link types.
-    * Drag & Drop reordering.
-    * Hover preview for Image and Video links.
-* **Collections:** Organize links into user-defined collections..js]
-* **Shop Management (Pro):** Dedicated section to manage products (CRUD)..js]
-* **Theme Customization:** Apply different visual themes to the public profile.
-* **Analytics (Pro):** Track link and product clicks, view performance over time, and see top content.
-* **Public Profile Page:** Dynamic, responsive page (`/:username`) displaying user's profile, links, products, and collections with theme support..js]
-* **Contact Form:** Integrated Google Form with automated responses via Google Apps Script.
+* **Link Management:**
+    * Unlimited links (Standard, Image, Video [Pro]).
+    * Intuitive drag-and-drop reordering.
+    * CRUD operations (Create, Read, Update, Delete)..js]
+    * Live URL validation and preview in the editor.
+    * Hover previews for links in the dashboard.
+* **Collections:** Organize links into categories.
+* **Theme Customization:** Choose from several themes to personalize the public page.
+* **Public Profile Page:**
+    * Unique URL (`/username`).
+    * Displays profile info, links, and products.
+    * Dynamic layout featuring stories, carousels (videos, image gallery), product grid, and standard links.
+    * Collection tabs for filtering content.
+    * Image download feature.
+* **Contact Form:** Integrated Google Form with automated responses via Apps Script.
 
----
+### Pro Features
 
-## 🛠️ Tech Stack
+* **Mini-Shop:** Dedicated dashboard section to manage and display products (image, title, price, description, external purchase link).
+* **Detailed Analytics:** Track clicks over time (7d, 30d, 90d), view top-performing links and products.
+* **Premium Themes:** Access to exclusive themes.
+* **(Manual Upgrade Process):** Implemented via Google Form/direct contact to validate the business model without payment gateway costs.
 
-* **Frontend:** React, Vite, Tailwind CSS, React Router, Axios, Swiper, Recharts, @dnd-kit
-* **Backend:** Node.js (via Vercel Serverless Functions)
+## Tech Stack
+
+* **Frontend:** React (Vite), Tailwind CSS, React Router, Axios, Swiper, Recharts, dnd-kit
+* **Backend:** Node.js Serverless Functions (on Vercel)
 * **Database:** MongoDB Atlas (Mongoose ODM)
-* **Deployment:** Vercel
+* **Authentication:** JWT (JSON Web Tokens), bcryptjs for password hashing
+* **Deployment:** Vercel (Frontend & Serverless Functions)
+* **Contact Form Automation:** Google Forms + Google Apps Script
 
----
-
-## 🚀 Getting Started Locally
+## Getting Started Locally
 
 1.  **Clone the repository:**
     ```bash
     git clone [https://github.com/IkhsanKusm/Minimalist-LinkHub-Bio.git](https://github.com/IkhsanKusm/Minimalist-LinkHub-Bio.git)
-    cd Minimalist-LinkHub-Bio-frontend
+    cd Minimalist-LinkHub-Bio/Minimalist-LinkHub-Bio-frontend
     ```
 2.  **Install dependencies:**
     ```bash
     npm install
     ```
-3.  **Set up Environment Variables:**
+3.  **Set up environment variables:**
     * Create a `.env` file in the root directory.
     * Add your MongoDB connection string and JWT secret:
         ```env
-        MONGO_URI=YOUR_MONGODB_ATLAS_CONNECTION_STRING
-        JWT_SECRET=YOUR_SUPER_SECRET_KEY
+        MONGO_URI=your_mongodb_atlas_connection_string
+        JWT_SECRET=your_super_secret_jwt_key
         ```
-4.  **Link to Vercel & Pull Dev Variables:**
-    * Install Vercel CLI: `npm install -g vercel`
-    * Login: `vercel login`
-    * Link project: `vercel link` (Follow prompts, link to a new or existing Vercel project)
-    * Pull variables: `vercel env pull .env.development.local`
+4.  **Sync environment variables with Vercel CLI (for `vercel dev`):**
+    * Install Vercel CLI: `npm i -g vercel`
+    * Log in: `vercel login`
+    * Link project: `vercel link` (Follow prompts, link to your Vercel project)
+    * Pull dev variables: `vercel env pull .env.development.local`
 5.  **Run the development server:**
     ```bash
     vercel dev
     ```
-    The application will be available at `http://localhost:3000` (or another port if 3000 is busy).
+    The application will be available at `http://localhost:3000` (or the port specified by `vercel dev`).
 
----
+## Deployment
 
-## ☁️ Deployment
+This project is configured for easy deployment to Vercel:
+1.  Ensure your `MONGO_URI` and `JWT_SECRET` are set as **Production** Environment Variables in your Vercel project settings.
+2.  Make sure MongoDB Atlas Network Access allows connections from `0.0.0.0/0`.
+3.  Push your code to the connected GitHub branch, or run:
+    ```bash
+    vercel --prod
+    ```
 
-This project is configured for easy deployment to Vercel. Deployments are automatically triggered upon pushing to the main branch connected to the Vercel project.
+## Project Structure
 
-Ensure `MONGO_URI` and `JWT_SECRET` environment variables are set in the Vercel project settings for the **Production** environment.
+* `/api`: Contains Vercel Serverless Functions handling backend logic.
+* `/public`: Static assets.
+* `/src`: Frontend React application source code.
+    * `/src/backend`: Shared backend logic (models, DB connection, utils, middleware) used by serverless functions.
+    * `/src/components`: Reusable React components.
+    * `/src/context`: React Context for global state (e.g., Auth).
+    * `/src/pages`: Top-level page components.
+    * `/src/utils`: Frontend utility functions.
+* `vercel.json`: Vercel configuration (rewrites, headers).
 
----
+## Future Development Ideas
 
-## 🤝 Contributing
-
-This project is primarily a portfolio piece. Contributions, issues, and feature requests are welcome but may be addressed based on personal availability.
-
----
-
-## 📄 License
-
-[Specify your license here, e.g., MIT License](https://choosealicense.com/licenses/mit/)
-=======
+* Persist drag-and-drop order for links, products, and collections.
+* More advanced analytics (e.g., referrers, locations).
+* Custom domain support.
+* Social logins.
+* Automated payment gateway integration.
