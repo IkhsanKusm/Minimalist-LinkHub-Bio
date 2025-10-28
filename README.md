@@ -82,8 +82,5 @@ This project is primarily a portfolio piece. Contributions, issues, and feature 
 
 ## 📄 License
 
-<<<<<<< HEAD
 [Specify your license here, e.g., MIT License](https://choosealicense.com/licenses/mit/)
 =======
-[Specify your license here, e.g., MIT License]
->>>>>>> 8f4cf5946b6e58583333a80d58d51a0b1184e9e6
