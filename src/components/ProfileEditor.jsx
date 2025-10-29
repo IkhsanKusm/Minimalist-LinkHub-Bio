@@ -82,7 +82,7 @@ const ProfileEditor = ({ user, onSave }) => {
               </div>
             )}
           </div>
-          <div className="flex-grow">
+          <div className="flex-grow w-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture URL</label>
             {isEditing ? (
               <input

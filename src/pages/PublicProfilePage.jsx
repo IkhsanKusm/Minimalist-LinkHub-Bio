@@ -133,7 +133,7 @@ const PublicProfilePage = () => {
              )}
           </div>
           <h1 className={`text-2xl md:text-3xl font-bold mt-3 ${activeTheme.name}`}>@{profile.username}</h1>
-          <p className="text-base mt-2 max-w-md mx-auto opacity-80">{profile.bio}</p>
+          <p className="text-md mt-2 max-w-lg mx-auto opacity-80 text-center">{profile.bio}</p>
         </header>
 
         <main className="space-y-8">
