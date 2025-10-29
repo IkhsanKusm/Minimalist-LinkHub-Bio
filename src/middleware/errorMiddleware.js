@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 // Handles requests to routes that don't exist (404)
 const notFound = (req, res, next) => {
     const error = new Error(`Not Found - ${req.originalUrl}`);

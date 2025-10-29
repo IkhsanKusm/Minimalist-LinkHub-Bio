@@ -50,7 +50,7 @@ const ImageGallery = ({ images, handleItemClick }) => {
       modules={[Navigation, Pagination]}
       spaceBetween={16}
       slidesPerView={1.5} // Show 1 full slide and a peek of the next one
-      centeredSlides={true}
+      centeredSlides={false}
       loop={images.length > 2} // Loop only if there are enough slides
       navigation
       pagination={{ clickable: true }}
