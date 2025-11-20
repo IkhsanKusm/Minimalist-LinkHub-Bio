@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');

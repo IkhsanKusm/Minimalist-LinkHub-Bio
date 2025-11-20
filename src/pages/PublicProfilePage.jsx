@@ -89,7 +89,7 @@ const PublicProfilePage = () => {
   // Filter links based on the active collection
   const displayedLinks = activeCollectionId
     ? links.filter(link => link.collectionId === activeCollectionId)
-    : links.filter(link => !link.collectionId); // Show uncategorized links in 'All'
+    : links; // Show all links in 'All'
 
   const videoLinks = displayedLinks.filter(link => getLinkDetails(link.url).type === 'video');
   const imageLinks = displayedLinks.filter(link => getLinkDetails(link.url).type === 'image');

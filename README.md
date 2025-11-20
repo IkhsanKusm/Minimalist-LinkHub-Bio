@@ -1,8 +1,8 @@
 # Onesi - Minimalist Link-in-Bio SaaS (Zero-Capital MVP)
 
-[![Vercel Deployment Status](https://vercel.com/miwyzards-projects/linkhub-frontend/deploy-status)](https://linkhub-frontend-mauve.vercel.app/)
+[![Vercel Deployment Status](https://vercel.com/miwyzards-projects/linkhub-frontend/deploy-status)](https://onesi.vercel.app/)
 
-Live Demo: [https://linkhub-frontend-mauve.vercel.app/](https://linkhub-frontend-mauve.vercel.app/)
+Live Demo: [https://onesi.vercel.app/]
 
 ## Overview
 
@@ -20,7 +20,7 @@ This project was built from scratch, covering the entire software development li
 * **Link Management:**
     * Unlimited links (Standard, Image, Video [Pro]).
     * Intuitive drag-and-drop reordering.
-    * CRUD operations (Create, Read, Update, Delete)..js]
+    * CRUD operations (Create, Read, Update, Delete).
     * Live URL validation and preview in the editor.
     * Hover previews for links in the dashboard.
 * **Collections:** Organize links into categories.
